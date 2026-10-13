@@ -172,20 +172,14 @@ export default function BlogsPage() {
                     <div className="absolute bottom-4 left-4 w-7 h-7 bg-[#080808] rounded-full flex items-center justify-center text-white text-[11px] font-black border border-white/10 group-hover:bg-[#00b14f] group-hover:border-[#00b14f] transition-all">R</div>
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-4 mb-4 text-[10px] font-black text-white/30 uppercase tracking-widest shrink-0">
-                    <div className="flex items-center gap-1.5">
-                      <FiCalendar className="w-3.5 h-3.5 text-[#00b14f]" />
-                      <span>{formatDate(post.created_at)}</span>
+                  {post.author && (
+                    <div className="flex flex-wrap items-center gap-4 mb-4 text-[10px] font-black text-white/30 uppercase tracking-widest shrink-0">
+                      <div className="flex items-center gap-1.5">
+                        <FiUser className="w-3.5 h-3.5 text-[#00b14f]" />
+                        <span className="truncate max-w-[150px]">By {post.author}</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1.5">
-                      <FiClock className="w-3.5 h-3.5 text-[#00b14f]" />
-                      <span>8 min read</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <FiUser className="w-3.5 h-3.5 text-[#00b14f]" />
-                      <span className="truncate max-w-[100px]">By {post.author}</span>
-                    </div>
-                  </div>
+                  )}
 
                   <h3 className="text-lg md:text-xl font-black text-white group-hover:text-[#00b14f] transition-colors mb-3 uppercase tracking-tighter leading-snug break-words">
                     {post.title}

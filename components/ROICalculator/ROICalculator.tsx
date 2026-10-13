@@ -29,10 +29,16 @@ export default function ROICalculator() {
   const [dailySessions, setDailySessions] = useState<number>(18);
   const [avgEnergyPerSession, setAvgEnergyPerSession] = useState<number>(26);
 
-  // Synchronize space sq ft when plan changes
+  // Synchronize space sq ft and session parameters when plan changes
   const handleSelectPlan = (plan: ChargerPlan) => {
     setSelectedPlan(plan);
     setSpaceSqFt((plan.defaultSpaceSqFt || 200) * stationCount);
+    if (plan.defaultDailySessions !== undefined) {
+      setDailySessions(plan.defaultDailySessions);
+    }
+    if (plan.defaultAvgEnergy !== undefined) {
+      setAvgEnergyPerSession(plan.defaultAvgEnergy);
+    }
   };
 
   const handleStationChange = (delta: number) => {

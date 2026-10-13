@@ -191,22 +191,14 @@ export default function BlogDetailClient({ params }: { params: Promise<{ slug: s
         </h1>
 
         {/* Article Meta Bar */}
-        <div className="flex flex-wrap items-center gap-6 text-slate-500 text-xs font-semibold mb-8 pb-6 border-b border-slate-200">
-          <div className="flex items-center gap-2">
-            <FiCalendar className="w-4 h-4 text-[#00b14f]" />
-            <span>{formatDate(post.created_at)}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <FiClock className="w-4 h-4 text-[#00b14f]" />
-            <span>8 min read</span>
-          </div>
-          {post.author && (
+        {post.author && (
+          <div className="flex flex-wrap items-center gap-6 text-slate-500 text-xs font-semibold mb-8 pb-6 border-b border-slate-200">
             <div className="flex items-center gap-2">
               <FiUser className="w-4 h-4 text-[#00b14f]" />
               <span>By {post.author}</span>
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Excerpt / Callout Box */}
         {post.excerpt && (

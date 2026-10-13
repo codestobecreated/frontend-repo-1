@@ -8,6 +8,8 @@ export interface ChargerPlan {
   franchiseeSharePercent: number; // e.g. 85%
   gunMultiplier: number; // scale multiplier for simultaneous charging bays
   defaultSpaceSqFt?: number;
+  defaultDailySessions?: number;
+  defaultAvgEnergy?: number;
 }
 
 export const CHARGER_PLANS: ChargerPlan[] = [
@@ -21,17 +23,21 @@ export const CHARGER_PLANS: ChargerPlan[] = [
     franchiseeSharePercent: 0.85,
     gunMultiplier: 1.8,
     defaultSpaceSqFt: 400,
+    defaultDailySessions: 18,
+    defaultAvgEnergy: 26,
   },
   {
     id: "120kw",
     name: "120 kW",
     capacityRange: "120 kW Heavy Fast Charger",
-    investmentDisplay: "₹75 Lakhs",
-    investmentAmount: 7500000,
-    investmentRange: "₹70 – ₹80 Lakhs",
+    investmentDisplay: "₹72 Lakhs",
+    investmentAmount: 7200000,
+    investmentRange: "₹70 – ₹75 Lakhs",
     franchiseeSharePercent: 0.85,
-    gunMultiplier: 3.2,
+    gunMultiplier: 2.2,
     defaultSpaceSqFt: 600,
+    defaultDailySessions: 26,
+    defaultAvgEnergy: 32,
   },
   {
     id: "superhub",
@@ -41,7 +47,9 @@ export const CHARGER_PLANS: ChargerPlan[] = [
     investmentAmount: 13500000,
     investmentRange: "₹1.2 Cr – ₹1.5 Cr",
     franchiseeSharePercent: 0.85,
-    gunMultiplier: 5.5,
+    gunMultiplier: 3.8,
     defaultSpaceSqFt: 1200,
+    defaultDailySessions: 45,
+    defaultAvgEnergy: 38,
   },
 ];

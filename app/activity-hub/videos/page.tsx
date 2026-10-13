@@ -125,11 +125,11 @@ const ArticleSection = ({ title, articles }: { title: string, articles: BlogItem
                   </div>
                 </div>
                 <h3 className="text-white font-bold text-xs md:text-sm group-hover:text-[#00b14f] transition-colors line-clamp-1 mb-0.5 uppercase tracking-tight">{post.title}</h3>
-                <div className="flex items-center gap-2 text-white/40 text-[9px] font-bold uppercase tracking-widest">
-                  <span>{post.read_time || "5 min read"}</span>
-                  <span className="w-1 h-1 rounded-full bg-white/10" />
-                  <span>By {post.author}</span>
-                </div>
+                {post.author && (
+                  <div className="flex items-center gap-2 text-white/40 text-[9px] font-bold uppercase tracking-widest">
+                    <span>By {post.author}</span>
+                  </div>
+                )}
               </a>
             ) : (
               <Link href={itemLink}>
@@ -153,11 +153,11 @@ const ArticleSection = ({ title, articles }: { title: string, articles: BlogItem
                   </div>
                 </div>
                 <h3 className="text-white font-bold text-xs md:text-sm group-hover:text-[#00b14f] transition-colors line-clamp-1 mb-0.5 uppercase tracking-tight">{post.title}</h3>
-                <div className="flex items-center gap-2 text-white/40 text-[9px] font-bold uppercase tracking-widest">
-                  <span>{post.read_time || "5 min read"}</span>
-                  <span className="w-1 h-1 rounded-full bg-white/10" />
-                  <span>By {post.author}</span>
-                </div>
+                {post.author && (
+                  <div className="flex items-center gap-2 text-white/40 text-[9px] font-bold uppercase tracking-widest">
+                    <span>By {post.author}</span>
+                  </div>
+                )}
               </Link>
             )}
           </motion.div>

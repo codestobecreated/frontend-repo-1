@@ -280,12 +280,8 @@ export default function HomeNewsMarquee() {
                         {/* Right Text Content */}
                         <div className="flex flex-col justify-center gap-1 sm:gap-1.5 flex-1 min-w-0 pr-1 sm:pr-2">
                           <div className="flex items-center gap-2 sm:gap-3">
-                            <span className="text-[#00b14f] text-[8px] sm:text-[9px] md:text-[10px] font-bold uppercase tracking-wider truncate max-w-25 sm:max-w-30">
+                            <span className="text-[#00b14f] text-[8px] sm:text-[9px] md:text-[10px] font-bold uppercase tracking-wider truncate">
                               {item.author || "PRESS RELEASE"}
-                            </span>
-                            <span className="text-[8px] sm:text-[9px] md:text-[10px] text-gray-400 font-medium flex items-center gap-1 shrink-0">
-                              <FiClock className="w-2.5 h-2.5" />
-                              {getRelativeTime(item.created_at)}
                             </span>
                           </div>
 

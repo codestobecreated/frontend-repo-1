@@ -28,14 +28,26 @@ jobs:
           NEXT_PUBLIC_MAPBOX_TOKEN: ${{ secrets.NEXT_PUBLIC_MAPBOX_TOKEN }}
         run: npm run build
 
-      - name: Deploy to Hostinger VPS
-        uses: easingthemes/ssh-deploy@main
-        with:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
-          ARGS: "-rlgoDzvc -i --delete"
-          SOURCE: "out/"
-          REMOTE_HOST: ${{ secrets.SSH_HOST }}
-          REMOTE_USER: ${{ secrets.SSH_USER }}
-          REMOTE_PORT: ${{ secrets.SSH_PORT || '22' }}
-          TARGET: "/home/reluxelectricapp/htdocs/reluxelectric.com/"
-          EXCLUDE: "/.git/, /.env*"
+      - name: Deploy to Hostinger VPS via Rsync
+        env:
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_KEY" | tr -d '\r' > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          
+          PORT="${SSH_PORT:-22}"
+          echo "Connecting to $SSH_HOST on port $PORT..."
+          ssh-keyscan -p "$PORT" "$SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+          chmod 644 ~/.ssh/known_hosts
+
+          echo "Testing SSH connection..."
+          ssh -p "$PORT" -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=accept-new "$SSH_USER@$SSH_HOST" "echo 'SSH authentication successful!' && mkdir -p /home/reluxelectricapp/htdocs/reluxelectric.com/"
+
+          echo "Syncing build files to /home/reluxelectricapp/htdocs/reluxelectric.com/..."
+          rsync -avz --delete -e "ssh -p $PORT -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=accept-new" out/ "$SSH_USER@$SSH_HOST:/home/reluxelectricapp/htdocs/reluxelectric.com/"
+          
+          echo "Deployment completed successfully!"

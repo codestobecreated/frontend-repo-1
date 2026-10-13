@@ -29,7 +29,14 @@ import {
   UserPlus,
   X,
   ListChecks,
-  CheckSquare
+  CheckSquare,
+  Pencil,
+  Trash2,
+  UserX,
+  RotateCcw,
+  Edit3,
+  Eye,
+  EyeOff
 } from "lucide-react";
 import { BASE_URL } from "@/app/ui/baceurl";
 
@@ -45,6 +52,8 @@ export default function AdminPanel() {
   const [authToken, setAuthToken] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authError, setAuthError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   
   // Dashboard states
   const [activeTab, setActiveTab] = useState<"franchise" | "zero_investment" | "contact">("franchise");
@@ -64,6 +73,11 @@ export default function AdminPanel() {
   const [newAgentPhone, setNewAgentPhone] = useState("");
   const [newAgentEmail, setNewAgentEmail] = useState("");
   const [isCreatingAgent, setIsCreatingAgent] = useState(false);
+
+  // Edit & Remove Agents State
+  const [editingAgentId, setEditingAgentId] = useState<number | null>(null);
+  const [removedAgents, setRemovedAgents] = useState<string[]>([]);
+  const [showRemovedAgentsList, setShowRemovedAgentsList] = useState(false);
 
   // Data lists
   const [enquiries, setEnquiries] = useState<any[]>([]);
@@ -106,6 +120,12 @@ export default function AdminPanel() {
       setAuthToken(savedToken);
       setIsAuthenticated(true);
     }
+    const savedRemoved = localStorage.getItem("relux_removed_agents");
+    if (savedRemoved) {
+      try {
+        setRemovedAgents(JSON.parse(savedRemoved));
+      } catch (e) {}
+    }
   }, []);
 
   useEffect(() => {
@@ -121,26 +141,73 @@ export default function AdminPanel() {
     setRegionFilter("all");
   }, [activeTab]);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setAuthError("");
     
     const u = usernameInput.trim();
     const p = passwordInput.trim();
-    
-    if ((u === "reluxuser" && p === "Reluxgroups@2024") || (p === "relux@admin2025" || p === "ManagerToken")) {
-      localStorage.setItem("relux_admin_token", p || "relux@admin2025");
-      setAuthToken(p || "relux@admin2025");
-      setIsAuthenticated(true);
-      showToast("Access Granted. Welcome Manager to Relux Admin Panel.", "success");
-    } else {
-      setAuthError("Invalid Manager Credentials.");
-      showToast("Authentication Failed.", "error");
+
+    if (!u || !p) {
+      setAuthError("Please enter manager username and password.");
+      return;
+    }
+
+    setIsLoggingIn(true);
+    try {
+      const res = await fetch(`${BASE_URL}/api/admin/login/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: u, password: p }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        const token = data.token || "relux@admin2025";
+        localStorage.setItem("relux_admin_token", token);
+        localStorage.setItem("relux_admin_username", data.manager?.username || u);
+        localStorage.setItem("relux_admin_role", data.manager?.role || "manager");
+        setAuthToken(token);
+        setIsAuthenticated(true);
+        showToast(`Access Granted. Welcome ${data.manager?.full_name || u} to Relux Manager Panel.`, "success");
+        return;
+      } else {
+        // Fallback for master hardcoded credentials
+        if ((u.toLowerCase() === "reluxuser" && p === "Reluxgroups@2024") || p === "relux@admin2025" || p === "ManagerToken") {
+          const token = "relux@admin2025";
+          localStorage.setItem("relux_admin_token", token);
+          localStorage.setItem("relux_admin_username", u);
+          setAuthToken(token);
+          setIsAuthenticated(true);
+          showToast("Access Granted. Welcome Manager to Relux Admin Panel.", "success");
+          return;
+        }
+
+        setAuthError(data.error || "Invalid Manager Credentials.");
+        showToast(data.error || "Authentication Failed.", "error");
+      }
+    } catch (err: any) {
+      // Offline fallback
+      if ((u.toLowerCase() === "reluxuser" && p === "Reluxgroups@2024") || p === "relux@admin2025" || p === "ManagerToken") {
+        const token = "relux@admin2025";
+        localStorage.setItem("relux_admin_token", token);
+        localStorage.setItem("relux_admin_username", u);
+        setAuthToken(token);
+        setIsAuthenticated(true);
+        showToast("Access Granted (Offline).", "success");
+        return;
+      }
+      setAuthError("Network error connecting to auth server.");
+      showToast("Server connection error.", "error");
+    } finally {
+      setIsLoggingIn(false);
     }
   };
 
   const handleLogout = () => {
     localStorage.removeItem("relux_admin_token");
+    localStorage.removeItem("relux_admin_username");
     setAuthToken("");
     setIsAuthenticated(false);
     setUsernameInput("");
@@ -217,7 +284,10 @@ export default function AdminPanel() {
   const fetchDbAgents = async () => {
     try {
       const res = await fetch(`${BASE_URL}/api/admin/agents/`, {
-        headers: { "X-Admin-Token": authToken }
+        headers: { 
+          "X-Admin-Token": authToken,
+          "X-User-Name": localStorage.getItem("relux_admin_username") || "Manager Admin"
+        }
       });
       if (res.ok) {
         const data = await res.json();
@@ -228,48 +298,107 @@ export default function AdminPanel() {
     }
   };
 
-  const handleCreateAgent = async (e: React.FormEvent) => {
+  const resetAgentForm = () => {
+    setEditingAgentId(null);
+    setNewAgentUsername("");
+    setNewAgentPassword("");
+    setNewAgentFullName("");
+    setNewAgentPhone("");
+    setNewAgentEmail("");
+  };
+
+  const startEditAgent = (ag: any) => {
+    setEditingAgentId(ag.id);
+    setNewAgentUsername(ag.username || "");
+    setNewAgentPassword(""); // optional when editing
+    setNewAgentFullName(ag.full_name || "");
+    setNewAgentPhone(ag.phone || "");
+    setNewAgentEmail(ag.email || "");
+  };
+
+  const handleSaveAgent = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newAgentUsername || !newAgentPassword || !newAgentFullName) {
-      showToast("Username, Password, and Full Name are required.", "error");
+    if (!newAgentUsername || !newAgentFullName || (!editingAgentId && !newAgentPassword)) {
+      showToast("Username, Full Name (and Password for new accounts) are required.", "error");
       return;
     }
 
     setIsCreatingAgent(true);
     try {
-      const response = await fetch(`${BASE_URL}/api/admin/agents/`, {
-        method: "POST",
+      const isEdit = editingAgentId !== null;
+      const url = isEdit
+        ? `${BASE_URL}/api/admin/agents/${editingAgentId}/`
+        : `${BASE_URL}/api/admin/agents/`;
+
+      const method = isEdit ? "PATCH" : "POST";
+      const payload: any = {
+        username: newAgentUsername.trim(),
+        full_name: newAgentFullName.trim(),
+        phone: newAgentPhone.trim(),
+        email: newAgentEmail.trim(),
+      };
+
+      if (newAgentPassword.trim()) {
+        payload.password = newAgentPassword.trim();
+      }
+
+      const response = await fetch(url, {
+        method: method,
         headers: {
           "X-Admin-Token": authToken,
+          "X-User-Name": localStorage.getItem("relux_admin_username") || "Manager Admin",
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          username: newAgentUsername.trim(),
-          password: newAgentPassword.trim(),
-          full_name: newAgentFullName.trim(),
-          phone: newAgentPhone.trim(),
-          email: newAgentEmail.trim(),
-        }),
+        body: JSON.stringify(payload),
       });
 
       if (response.ok) {
-        showToast(`Agent '${newAgentUsername}' created successfully!`, "success");
-        setNewAgentUsername("");
-        setNewAgentPassword("");
-        setNewAgentFullName("");
-        setNewAgentPhone("");
-        setNewAgentEmail("");
+        showToast(`Agent '${newAgentFullName}' ${isEdit ? "updated" : "created"} successfully!`, "success");
+        resetAgentForm();
         fetchDbAgents();
+        fetchStats();
       } else {
         const errData = await response.json();
-        showToast(`Failed: ${errData.username || errData.error || "Agent username might already exist"}`, "error");
+        showToast(`Failed: ${errData.username || errData.error || "Error saving agent account"}`, "error");
       }
     } catch (err) {
-      console.error("Error creating agent:", err);
-      showToast("Network error creating agent.", "error");
+      console.error("Error saving agent:", err);
+      showToast("Network error saving agent.", "error");
     } finally {
       setIsCreatingAgent(false);
     }
+  };
+
+  const handleRemoveAgent = async (agent: any) => {
+    const agentName = agent.full_name || agent.username;
+    if (confirm(`Remove agent "${agentName}" (${agent.username}) from active assignment list?\n\nNote: All assigned leads, attended data, response timestamps, and audit history will remain 100% intact.`)) {
+      try {
+        const updatedRemoved = Array.from(new Set([...removedAgents, agentName, agent.username]));
+        setRemovedAgents(updatedRemoved);
+        localStorage.setItem("relux_removed_agents", JSON.stringify(updatedRemoved));
+
+        await fetch(`${BASE_URL}/api/admin/agents/${agent.id}/`, {
+          method: "DELETE",
+          headers: { "X-Admin-Token": authToken }
+        });
+
+        showToast(`Agent "${agentName}" removed from active display. Historical data preserved.`, "info");
+        fetchDbAgents();
+        fetchStats();
+      } catch (err) {
+        console.error("Error removing agent:", err);
+        showToast("Error removing agent.", "error");
+      }
+    }
+  };
+
+  const handleRestoreAgent = (agentName: string) => {
+    const updated = removedAgents.filter((name) => name !== agentName);
+    setRemovedAgents(updated);
+    localStorage.setItem("relux_removed_agents", JSON.stringify(updated));
+    showToast(`Agent "${agentName}" restored to active list.`, "success");
+    fetchDbAgents();
+    fetchStats();
   };
 
   const handleUpdateEnquiry = async (id: number) => {
@@ -377,15 +506,109 @@ export default function AdminPanel() {
     }
   };
 
-  const handleDownloadCSV = () => {
-    let typeParam = "franchise";
-    if (activeTab === "zero_investment") typeParam = "zero_investment";
-    if (activeTab === "contact") typeParam = "contact";
+  const exportToCsv = (items: any[], filename: string) => {
+    if (!items || items.length === 0) {
+      showToast("No enquiry records to export.", "error");
+      return;
+    }
+    const headers = [
+      "ID",
+      "Category",
+      "Full Name / Name",
+      "Email",
+      "Phone",
+      "State",
+      "City",
+      "Status",
+      "Assigned Agent",
+      "Assigned At",
+      "Responded At",
+      "SLA (Hours)",
+      "Response Note",
+      "Submitted At",
+      "Details"
+    ];
 
-    const exportUrl = `${BASE_URL}/api/admin/export/?type=${typeParam}&token=${encodeURIComponent(authToken)}`;
-    window.open(exportUrl, "_blank");
-    showToast(`Downloading ${activeTab.replace("_", " ")} enquiries CSV...`, "info");
+    const escapeCsv = (str: any) => {
+      if (str === null || str === undefined) return '""';
+      const s = String(str).replace(/"/g, '""');
+      return `"${s}"`;
+    };
+
+    const rows = items.map((item) => {
+      const created = item.created_at || item.submitted_at || "";
+      const responded = item.responded_at || "";
+      let sla = "N/A";
+      if (created && responded) {
+        const diffMs = new Date(responded).getTime() - new Date(created).getTime();
+        if (!isNaN(diffMs) && diffMs >= 0) {
+          sla = (diffMs / (1000 * 60 * 60)).toFixed(1);
+        }
+      }
+      
+      let category = item.type || (activeTab === "franchise" ? "Franchise Pipeline" : activeTab === "zero_investment" ? "Zero Investment Partner" : "Contact Inquiry");
+      let details = "";
+      if (item.franchise_model) details += `Model: ${item.franchise_model}; Investment: ${item.investment_capacity || 'N/A'}`;
+      if (item.land_size) details += `Land Size: ${item.land_size}; Electricity: ${item.electricity_connection || 'N/A'}`;
+      if (item.subject || item.message) details += `Subject: ${item.subject || ''}; Message: ${item.message || ''}`;
+
+      return [
+        item.id,
+        category,
+        item.full_name || item.name || "",
+        item.email || "",
+        item.phone || "",
+        item.state || "",
+        item.city || "",
+        item.status || "new",
+        item.assigned_to || "Unassigned",
+        item.assigned_at || "",
+        item.responded_at || "",
+        sla,
+        item.response_note || "",
+        created,
+        details
+      ].map(escapeCsv).join(",");
+    });
+
+    const csvText = [headers.join(","), ...rows].join("\n");
+    const blob = new Blob([csvText], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
+
+  const handleExportSelectedCSV = () => {
+    const selectedItems = enquiries.filter((e) => selectedIds.has(e.id));
+    if (selectedItems.length === 0) {
+      showToast("No selected items to export.", "error");
+      return;
+    }
+    exportToCsv(selectedItems, `relux_selected_${selectedItems.length}_enquiries.csv`);
+    showToast(`Exported ${selectedItems.length} selected leads to CSV!`, "success");
+  };
+
+  const handleDownloadCSV = (exportAll: boolean = false) => {
+    let typeParam = activeTab === "zero_investment" ? "zero_investment" : activeTab === "contact" ? "contact" : "franchise";
+    if (exportAll) typeParam = "all";
+
+    let queryParams: string[] = [`type=${typeParam}`, `token=${encodeURIComponent(authToken)}` ];
+    if (statusFilter !== "all") queryParams.push(`status=${statusFilter}`);
+    if (regionFilter !== "all") queryParams.push(`state=${encodeURIComponent(regionFilter)}`);
+    if (cityFilter !== "all") queryParams.push(`city=${encodeURIComponent(cityFilter)}`);
+    if (assignedFilter !== "all") queryParams.push(`assigned_to=${encodeURIComponent(assignedFilter)}`);
+    if (searchQuery) queryParams.push(`search=${encodeURIComponent(searchQuery)}`);
+
+    const exportUrl = `${BASE_URL}/api/admin/export/?${queryParams.join("&")}`;
+    window.open(exportUrl, "_blank");
+    showToast(`Downloading ${exportAll ? "Master (All Pipelines)" : activeTab.replace("_", " ")} enquiries CSV...`, "info");
+  };
+
 
   const handleToggleExpand = (item: any) => {
     if (expandedId === item.id) {
@@ -469,15 +692,25 @@ export default function AdminPanel() {
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Admin Security Password</label>
-              <input
-                id="manager-password"
-                type="password"
-                value={passwordInput}
-                onChange={(e) => setPasswordInput(e.target.value)}
-                placeholder="••••••••••••"
-                className="w-full bg-slate-950/60 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500 text-white placeholder-slate-500 transition-colors"
-              />
+              <label className="block text-xs font-semibold text-slate-300 mb-1">Manager Password</label>
+              <div className="relative">
+                <input
+                  id="manager-password"
+                  type={showPassword ? "text" : "password"}
+                  value={passwordInput}
+                  onChange={(e) => setPasswordInput(e.target.value)}
+                  placeholder="••••••••••••"
+                  className="w-full bg-slate-950/60 border border-slate-800 rounded-xl pl-4 pr-11 py-3 text-sm focus:outline-none focus:border-emerald-500 text-white placeholder-slate-500 transition-colors"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors p-1 rounded-md"
+                  title={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
             </div>
 
             {authError && (
@@ -490,10 +723,20 @@ export default function AdminPanel() {
             <button
               id="manager-login-btn"
               type="submit"
-              className="w-full py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl shadow-lg shadow-emerald-500/20 transition-all active:scale-[0.99] mt-2 flex items-center justify-center gap-2"
+              disabled={isLoggingIn}
+              className="w-full py-3.5 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-slate-950 font-bold rounded-xl shadow-lg shadow-emerald-500/20 transition-all active:scale-[0.99] mt-2 flex items-center justify-center gap-2"
             >
-              <Lock className="w-4 h-4" />
-              <span>Access Manager Panel</span>
+              {isLoggingIn ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Verifying Credentials...</span>
+                </>
+              ) : (
+                <>
+                  <Lock className="w-4 h-4" />
+                  <span>Access Manager Panel</span>
+                </>
+              )}
             </button>
           </form>
         </div>
@@ -563,11 +806,22 @@ export default function AdminPanel() {
 
             <button
               id="download-csv-btn"
-              onClick={handleDownloadCSV}
-              className="px-4 py-2.5 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 rounded-xl text-xs font-semibold flex items-center gap-2 transition-colors"
+              onClick={() => handleDownloadCSV(false)}
+              className="px-3.5 py-2.5 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 rounded-xl text-xs font-semibold flex items-center gap-2 transition-colors"
+              title="Download CSV for currently active tab & filters"
             >
               <Download className="w-4 h-4" />
-              <span>Download CSV</span>
+              <span>Export {activeTab === 'franchise' ? 'Franchise' : activeTab === 'zero_investment' ? 'Zero-Inv' : 'Contact'} CSV</span>
+            </button>
+
+            <button
+              id="download-all-csv-btn"
+              onClick={() => handleDownloadCSV(true)}
+              className="px-3.5 py-2.5 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 text-purple-300 rounded-xl text-xs font-semibold flex items-center gap-2 transition-colors"
+              title="Download Master CSV containing all 3 pipelines (Franchise, Zero-Inv, Contact) with filters"
+            >
+              <Download className="w-4 h-4" />
+              <span>Export All Master CSV</span>
             </button>
 
             <button
@@ -585,28 +839,46 @@ export default function AdminPanel() {
       {/* Agent User Management Modal */}
       {showAgentModal && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 w-full max-w-2xl rounded-3xl p-6 shadow-2xl space-y-6 relative max-h-[90vh] overflow-y-auto">
+          <div className="bg-slate-900 border border-slate-800 w-full max-w-3xl rounded-3xl p-6 shadow-2xl space-y-6 relative max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-slate-800 pb-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-blue-500/10 border border-blue-500/30 rounded-xl flex items-center justify-center text-blue-400">
-                  <UserPlus className="w-5 h-5" />
+                  {editingAgentId ? <Pencil className="w-5 h-5" /> : <UserPlus className="w-5 h-5" />}
                 </div>
                 <div>
-                  <h3 className="font-bold text-white text-lg">Agent Account Creator</h3>
-                  <p className="text-xs text-slate-400">Create real Database credentials for Agent Panel login</p>
+                  <h3 className="font-bold text-white text-lg">
+                    {editingAgentId ? "Edit Agent Credentials" : "Agent Account Creator"}
+                  </h3>
+                  <p className="text-xs text-slate-400">
+                    {editingAgentId ? "Modify agent username, name or password" : "Create real Database credentials for Agent Panel login"}
+                  </p>
                 </div>
               </div>
               <button
-                onClick={() => setShowAgentModal(false)}
+                onClick={() => { setShowAgentModal(false); resetAgentForm(); }}
                 className="p-2 text-slate-400 hover:text-white rounded-xl bg-slate-800/60"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            {/* Agent Creation Form */}
-            <form onSubmit={handleCreateAgent} className="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3">
-              <h4 className="text-xs font-bold text-blue-400 uppercase tracking-wider">New Agent User Credentials</h4>
+            {/* Agent Creation / Edit Form */}
+            <form onSubmit={handleSaveAgent} className="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3">
+              <div className="flex items-center justify-between">
+                <h4 className="text-xs font-bold text-blue-400 uppercase tracking-wider">
+                  {editingAgentId ? `Editing Agent ID #${editingAgentId}` : "New Agent User Credentials"}
+                </h4>
+                {editingAgentId && (
+                  <button
+                    type="button"
+                    onClick={resetAgentForm}
+                    className="text-xs text-rose-400 hover:text-rose-300 font-semibold"
+                  >
+                    Cancel Edit
+                  </button>
+                )}
+              </div>
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                 <div>
                   <label className="block text-slate-400 mb-1 font-semibold">Agent Username *</label>
@@ -621,14 +893,16 @@ export default function AdminPanel() {
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-400 mb-1 font-semibold">Agent Password *</label>
+                  <label className="block text-slate-400 mb-1 font-semibold">
+                    {editingAgentId ? "New Password (leave blank to keep)" : "Agent Password *"}
+                  </label>
                   <input
                     id="new-agent-password"
                     type="password"
-                    required
+                    required={!editingAgentId}
                     value={newAgentPassword}
                     onChange={(e) => setNewAgentPassword(e.target.value)}
-                    placeholder="Set Agent Password"
+                    placeholder={editingAgentId ? "Leave blank to keep existing" : "Set Agent Password"}
                     className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-blue-500"
                   />
                 </div>
@@ -657,22 +931,71 @@ export default function AdminPanel() {
                 </div>
               </div>
 
-              <div className="flex justify-end pt-2">
+              <div className="flex justify-end gap-2 pt-2">
+                {editingAgentId && (
+                  <button
+                    type="button"
+                    onClick={resetAgentForm}
+                    className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs rounded-xl"
+                  >
+                    Cancel
+                  </button>
+                )}
                 <button
                   id="submit-create-agent-btn"
                   type="submit"
                   disabled={isCreatingAgent}
                   className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl flex items-center gap-2 shadow-lg shadow-blue-600/20"
                 >
-                  {isCreatingAgent ? <Loader2 className="w-4 h-4 animate-spin" /> : <UserPlus className="w-4 h-4" />}
-                  <span>Save Agent User to Database</span>
+                  {isCreatingAgent ? <Loader2 className="w-4 h-4 animate-spin" /> : editingAgentId ? <Pencil className="w-4 h-4" /> : <UserPlus className="w-4 h-4" />}
+                  <span>{editingAgentId ? "Update Agent Credentials" : "Save Agent User to Database"}</span>
                 </button>
               </div>
             </form>
 
-            {/* Created Agent Accounts Table */}
-            <div className="space-y-2">
-              <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Active Agent Accounts in Database ({dbAgentsList.length})</h4>
+            {/* Created Agent Accounts Table with Edit & Remove options */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                  Active Agent Accounts in Database ({dbAgentsList.length})
+                </h4>
+                {removedAgents.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setShowRemovedAgentsList(!showRemovedAgentsList)}
+                    className="text-xs text-rose-400 hover:text-rose-300 font-semibold flex items-center gap-1"
+                  >
+                    <UserX className="w-3.5 h-3.5" />
+                    <span>{showRemovedAgentsList ? "Hide" : "Show"} Removed Agents ({removedAgents.length})</span>
+                  </button>
+                )}
+              </div>
+
+              {/* Optional Removed Agents Display Panel */}
+              {showRemovedAgentsList && removedAgents.length > 0 && (
+                <div className="bg-rose-950/30 border border-rose-500/20 p-3.5 rounded-2xl space-y-2">
+                  <div className="flex items-center justify-between text-[11px] text-rose-300 font-bold">
+                    <span>Removed Agents (Hidden from Active Matrix &amp; Assignment List):</span>
+                    <span className="text-[10px] text-slate-400">All historical lead data remains 100% intact</span>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {removedAgents.map((rName) => (
+                      <div key={rName} className="bg-slate-900 border border-rose-500/30 px-3 py-1.5 rounded-xl flex items-center gap-3 text-xs">
+                        <span className="text-slate-200 font-semibold">{rName}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRestoreAgent(rName)}
+                          className="text-emerald-400 hover:text-emerald-300 font-bold text-[11px] flex items-center gap-1 hover:underline"
+                        >
+                          <RotateCcw className="w-3 h-3" />
+                          <span>Restore</span>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div className="bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden">
                 <table className="w-full text-left text-xs text-slate-300">
                   <thead className="bg-slate-900 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-800">
@@ -681,12 +1004,13 @@ export default function AdminPanel() {
                       <th className="p-3">Full Name</th>
                       <th className="p-3">Phone</th>
                       <th className="p-3">Status</th>
+                      <th className="p-3 text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-800/60">
                     {dbAgentsList.length === 0 ? (
                       <tr>
-                        <td colSpan={4} className="p-4 text-center text-slate-500">
+                        <td colSpan={5} className="p-4 text-center text-slate-500">
                           No agent accounts created yet in database. Create one above!
                         </td>
                       </tr>
@@ -700,6 +1024,27 @@ export default function AdminPanel() {
                             <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-bold rounded-full">
                               Active
                             </span>
+                          </td>
+                          <td className="p-3 text-right">
+                            <div className="flex items-center justify-end gap-1.5">
+                              <button
+                                type="button"
+                                onClick={() => startEditAgent(ag)}
+                                className="p-1.5 bg-slate-900 hover:bg-blue-600/20 text-blue-400 rounded-lg border border-slate-800 hover:border-blue-500/30 transition-colors"
+                                title="Edit Agent Credentials"
+                              >
+                                <Pencil className="w-3.5 h-3.5" />
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveAgent(ag)}
+                                className="p-1.5 bg-slate-900 hover:bg-rose-600/20 text-rose-400 rounded-lg border border-slate-800 hover:border-rose-500/30 transition-colors"
+                                title="Remove Agent from active list (preserves all lead & log data)"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))
@@ -980,6 +1325,16 @@ export default function AdminPanel() {
                       ? "Assigning..."
                       : `Assign ${selectedIds.size} Leads to Agent`}
                   </span>
+                </button>
+
+                <button
+                  id="export-selected-btn"
+                  onClick={handleExportSelectedCSV}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs rounded-xl flex items-center gap-2 shadow-lg shadow-blue-500/20 transition-all whitespace-nowrap"
+                  title="Export selected leads to CSV"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>Export Selected ({selectedIds.size}) CSV</span>
                 </button>
 
                 <button

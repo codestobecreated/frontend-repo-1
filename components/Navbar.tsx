@@ -13,8 +13,11 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mobileExpandedMenu, setMobileExpandedMenu] = useState<string | null>(null);
 
-  // Hide navbar on admin panel subpaths
-  if (pathname === '/admin-panel' || pathname.startsWith('/admin-panel/')) {
+  // Hide navbar on admin, founder, and agent panel subpaths
+  const isHiddenPath = ["/admin-panel", "/founder-panel", "/agent-panel"].some(
+    (p) => pathname === p || pathname.startsWith(p + "/")
+  );
+  if (isHiddenPath) {
     return null;
   }
 
@@ -41,6 +44,7 @@ export default function Navbar() {
       subMenu: [
         { name: 'Franchise', href: '/business/franchise', desc: 'Join our growing network', icon: Briefcase },
         { name: 'Zero Investment', href: '/business/zero-investment', desc: 'Start with zero capital', icon: Rocket },
+        { name: 'Charger as a Service (CaaS)', href: '/business/caas', desc: 'Lease and own your EV charger', icon: Zap },
       ]
     },
     {
@@ -70,6 +74,7 @@ export default function Navbar() {
               width={220}
               height={55}
               priority
+              loading="eager"
               className="object-contain h-12 xl:h-13 w-auto"
             />
           </Link>

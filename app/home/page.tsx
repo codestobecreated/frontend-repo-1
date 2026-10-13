@@ -1,7 +1,15 @@
 import type { Metadata } from "next";
-import dynamic from "next/dynamic";
 import HomeHero from "./include/hero";
-import LazySection from "../../components/LazySection";
+import HomeNewsMarquee from "./include/news-marquee";
+import HomeAbout from "./include/about";
+import SimpleABC from "./include/simple-abc";
+import HomeCTABanner from "./include/cta-banner";
+import HomePartners from "./include/partners";
+import HomeBusiness from "./include/business";
+import HomeCaaS from "./include/caas";
+import HomeUpdates from "./include/updates";
+import HomeAppFeature from "./include/app-feature";
+import HomeContactCTA from "./include/contact-cta";
 import { SITE_URL } from "@/app/ui/baceurl";
 
 export const metadata: Metadata = {
@@ -10,57 +18,20 @@ export const metadata: Metadata = {
   },
 };
 
-const HomeNewsMarquee = dynamic(() => import("./include/news-marquee"));
-const HomeAbout = dynamic(() => import("./include/about"));
-const SimpleABC = dynamic(() => import("./include/simple-abc"));
-const HomeCTABanner = dynamic(() => import("./include/cta-banner"));
-const HomePartners = dynamic(() => import("./include/partners"));
-const HomeBusiness = dynamic(() => import("./include/business"));
-const HomeCaaS = dynamic(() => import("./include/caas"));
-const HomeUpdates = dynamic(() => import("./include/updates"));
-const HomeAppFeature = dynamic(() => import("./include/app-feature"));
-const HomeContactCTA = dynamic(() => import("./include/contact-cta"));
-const CtaSection = dynamic(() => import("../../components/CtaSection"));
-const WhyChooseRelux = dynamic(() => import("./include/why-choose"));
-
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col bg-black">
+    <div className="flex min-h-screen flex-col bg-black">
       <HomeHero />
-      <LazySection placeholderHeight="100px">
-        <HomeNewsMarquee />
-      </LazySection>
-      <LazySection placeholderHeight="400px">
-        <HomeCaaS />
-      </LazySection>
-      <LazySection placeholderHeight="500px">
-        <HomeAbout />
-      </LazySection>
-      <LazySection placeholderHeight="200px">
-        <HomeCTABanner />
-      </LazySection>
-      <LazySection placeholderHeight="150px">
-        <HomePartners />
-      </LazySection>
-      <LazySection placeholderHeight="400px">
-        <HomeBusiness />
-      </LazySection>
-
-      <LazySection placeholderHeight="400px">
-        <HomeUpdates />
-      </LazySection>
-      <LazySection placeholderHeight="150px">
-        <SimpleABC />
-      </LazySection>
-      <LazySection placeholderHeight="400px">
-        <HomeAppFeature />
-      </LazySection>
-      {/* <LazySection placeholderHeight="400px">
-        <WhyChooseRelux />
-      </LazySection> */}
-      <LazySection placeholderHeight="300px">
-        <HomeContactCTA />
-      </LazySection>
-    </main>
+      <HomeNewsMarquee />
+      <HomeCaaS />
+      <HomeAbout />
+      <HomeCTABanner />
+      <HomePartners />
+      <HomeBusiness />
+      <HomeUpdates />
+      <SimpleABC />
+      <HomeAppFeature />
+      <HomeContactCTA />
+    </div>
   );
 }

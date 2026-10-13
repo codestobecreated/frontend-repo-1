@@ -335,8 +335,46 @@ export default function ServicePage() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const active = serviceDetails.find((s) => s.id === activeId) ?? null;
 
+  const serviceSchema = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": "https://reluxelectric.com/business/service#webpage",
+        "url": "https://reluxelectric.com/business/service",
+        "name": "Turnkey EV Infrastructure Services & Fleet Depot Charging | Relux Electric",
+        "description": "End-to-end EV charging infrastructure, electric bus depot solutions, smart home charging, and B2B fleet electrification services by Relux Electric.",
+        "publisher": { "@id": "https://reluxelectric.com/#organization" },
+      },
+      {
+        "@type": "Service",
+        "@id": "https://reluxelectric.com/business/service#service",
+        "name": "End-to-End EV Infrastructure Solutions",
+        "provider": { "@id": "https://reluxelectric.com/#organization" },
+        "areaServed": "IN",
+        "description": "Turnkey civil/electrical substation execution, high-power DC fleet charging hubs, and smart home charging solutions.",
+        "hasOfferCatalog": {
+          "@type": "OfferCatalog",
+          "name": "Relux EV Services Catalog",
+          "itemListElement": serviceDetails.map((item) => ({
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": item.h2Title,
+              "description": item.shortDesc,
+            },
+          })),
+        },
+      },
+    ],
+  };
+
   return (
     <main className="min-h-screen bg-black text-white font-sans">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }}
+      />
 
       {/* ══ PAGE HEADER ══ */}
       <section className="relative bg-[#060606] border-b border-white/[0.07] py-14 md:py-20 px-4 overflow-hidden">

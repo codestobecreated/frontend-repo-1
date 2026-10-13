@@ -14,7 +14,14 @@ export default function Footer() {
     return null;
   }
 
-  if (pathname === "/admin-panel" || pathname.startsWith("/admin-panel/")) {
+  const isHiddenPanel = ["/admin-panel", "/founder-panel", "/agent-panel"].some(
+    (p) => pathname === p || pathname.startsWith(p + "/")
+  );
+  if (isHiddenPanel) {
+    return null;
+  }
+
+  if (pathname === "/founder-panel" || pathname.startsWith("/founder-panel/")) {
     return null;
   }
 
@@ -24,6 +31,7 @@ export default function Footer() {
       <Link
         href="https://wa.me/919884866993"
         target="_blank"
+        rel="noopener noreferrer"
         aria-label="Contact Relux Electric on WhatsApp"
         className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-[#25D366] rounded-full flex items-center justify-center shadow-[0_4px_20px_rgba(37,211,102,0.4)] hover:scale-110 active:scale-95 transition-all duration-300"
       >
@@ -33,7 +41,7 @@ export default function Footer() {
       </Link>
 
       {/* Top Accent Ambient Glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-px bg-gradient-to-r from-transparent via-[#00b14f] to-transparent" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-px bg-linear-to-r from-transparent via-[#00b14f] to-transparent" />
 
       {/* Main Full-Width Container */}
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
@@ -110,7 +118,8 @@ export default function Footer() {
                 { name: "Contact Us", href: "/contact" },
                 { name: "Franchise Opportunity", href: "/business/franchise" },
                 { name: "Zero Investment Model", href: "/business/zero-investment" },
-                { name: "UBC Protocol", href: "/unified-bharat-echarge" },
+                { name: "Charger as a Service (CaaS)", href: "/business/caas" },
+                // { name: "UBC Protocol", href: "/unified-bharat-echarge" },
               ].map((item) => (
                 <li key={item.name}>
                   <Link href={item.href} className="text-zinc-400 hover:text-[#00b14f] transition-colors font-medium">
@@ -142,10 +151,10 @@ export default function Footer() {
             </div>
 
             <div className="pt-2 flex flex-wrap gap-3">
-              <Link href="https://apps.apple.com/in/app/relux-electric/id1552174323" target="_blank" aria-label="Download Relux Electric on the App Store" className="hover:opacity-85 transition-opacity">
+              <Link href="https://apps.apple.com/in/app/relux-electric/id1552174323" target="_blank" rel="noopener noreferrer" aria-label="Download Relux Electric on the App Store" className="hover:opacity-85 transition-opacity">
                 <Image src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" alt="Download on the App Store" width={130} height={38} className="h-8.5 w-auto" />
               </Link>
-              <Link href="https://play.google.com/store/apps/details?id=com.namp.relux&pcampaignid=web_share" target="_blank" aria-label="Get Relux Electric on Google Play" className="hover:opacity-85 transition-opacity">
+              <Link href="https://play.google.com/store/apps/details?id=com.namp.relux&pcampaignid=web_share" target="_blank" rel="noopener noreferrer" aria-label="Get Relux Electric on Google Play" className="hover:opacity-85 transition-opacity">
                 <Image src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Get it on Google Play" width={130} height={38} className="h-8.5 w-auto" />
               </Link>
             </div>
@@ -174,6 +183,8 @@ export default function Footer() {
           <div google-add-preferred-source-btn="true" data-theme="dark" data-lang="en" />
         </div>
 
+
+
         {/* Copyright & Legal Links Bar */}
         <div className="pt-6 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4 text-zinc-500 text-xs font-medium">
           <p>© {new Date().getFullYear()} Relux Electric India. All rights reserved.</p>
@@ -193,7 +204,7 @@ export default function Footer() {
                 href="https://ec4you.in/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[#00b14f] hover:underline font-semibold"
+                className="text-white hover:underline font-semibold"
               >
                 EC4You
               </a>

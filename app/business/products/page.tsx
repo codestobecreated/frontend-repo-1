@@ -34,7 +34,7 @@ export interface ProductItem {
   image: string;
 }
 
-export const productsList: ProductItem[] = [];
+const productsList: ProductItem[] = [];
 
 const TABS = [
   { key: "all", label: "All Products" },
@@ -99,8 +99,32 @@ export default function ProductListingPage() {
     return true;
   });
 
+  const productsSchema = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": "https://reluxelectric.com/business/products#webpage",
+        "url": "https://reluxelectric.com/business/products",
+        "name": "EV Chargers & Hardware Catalog | Relux Electric",
+        "description": "High-performance Make-in-India DC fast chargers and AC charging hardware engineered by Relux Electric.",
+        "publisher": { "@id": "https://reluxelectric.com/#organization" },
+      },
+      {
+        "@type": "OfferCatalog",
+        "@id": "https://reluxelectric.com/business/products#catalog",
+        "name": "Relux EV Chargers Catalog",
+        "provider": { "@id": "https://reluxelectric.com/#organization" },
+      },
+    ],
+  };
+
   return (
     <main className="min-h-screen bg-[#0a0a0a] text-white font-sans selection:bg-[#4ade80] selection:text-black">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productsSchema) }}
+      />
       {/* ── HERO BANNER (WEBSITE DARK THEME) ── */}
       <section className="relative w-full bg-black text-white py-14 overflow-hidden border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-8">

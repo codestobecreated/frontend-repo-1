@@ -54,14 +54,20 @@ export default function HomeHero() {
                   <div className="absolute inset-0 bg-white/10 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300 ease-out" />
                   <span className="relative">Partner With Us</span>
                 </Link>
-                <Link
+                {/* <Link
                   href="/products"
                   className="group/btn relative inline-flex items-center justify-center gap-2 bg-[#00b14f] hover:bg-[#009b45] text-white font-bold text-[12px] px-5 py-2.5 rounded-full transition-all duration-300 shadow-[0_4px_16px_rgba(0,177,79,0.4)] hover:shadow-[0_8px_24px_rgba(0,177,79,0.55)] hover:-translate-y-0.5 overflow-hidden"
                 >
                   <div className="absolute inset-0 bg-white/10 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300 ease-out" />
                   <span className="relative">View Our Products</span>
+                </Link> */}
+                <Link
+                  href="/business/caas"
+                  className="group/btn relative inline-flex items-center justify-center gap-2 bg-[#00b14f] hover:bg-[#009b45] text-white font-bold text-[12px] px-5 py-2.5 rounded-full transition-all duration-300 shadow-[0_4px_16px_rgba(0,177,79,0.4)] hover:shadow-[0_8px_24px_rgba(0,177,79,0.55)] hover:-translate-y-0.5 overflow-hidden"
+                >
+                  <div className="absolute inset-0 bg-white/10 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300 ease-out" />
+                  <span className="relative">Charger as a Service</span>
                 </Link>
-
               </div>
             </div>
           </div>

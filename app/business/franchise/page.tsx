@@ -40,17 +40,38 @@ export const metadata: Metadata = {
 };
 
 export default function FranchisePage() {
-  const faqSchema = {
+  const pageSchema = {
     "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": FAQS_DATA.map((faq) => ({
-      "@type": "Question",
-      "name": faq.question,
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": faq.answer,
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": `${SITE_URL}/business/franchise#webpage`,
+        "url": `${SITE_URL}/business/franchise`,
+        "name": "EV Charging Station Franchise Opportunities in India | Relux Electric",
+        "description": "Start your EV charging station franchise with Relux Electric. Low-investment, high-profit franchise models for EV charging hubs across India.",
+        "publisher": { "@id": `${SITE_URL}/#organization` },
       },
-    })),
+      {
+        "@type": "Service",
+        "@id": `${SITE_URL}/business/franchise#service`,
+        "name": "EV Charging Station Franchise Program",
+        "provider": { "@id": `${SITE_URL}/#organization` },
+        "areaServed": "IN",
+        "description": "Turnkey franchise models for establishing EV fast charging stations with make-in-India hardware, central CMS software, and full operational support.",
+      },
+      {
+        "@type": "FAQPage",
+        "@id": `${SITE_URL}/business/franchise#faq`,
+        "mainEntity": FAQS_DATA.map((faq) => ({
+          "@type": "Question",
+          "name": faq.question,
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": faq.answer,
+          },
+        })),
+      },
+    ],
   };
 
   return (
@@ -59,7 +80,7 @@ export default function FranchisePage() {
       <script
         type="application/ld+json"
         suppressHydrationWarning
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(pageSchema) }}
       />
 
       {/* 1. Hero Section */}

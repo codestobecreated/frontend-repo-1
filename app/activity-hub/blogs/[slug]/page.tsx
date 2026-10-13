@@ -2,123 +2,62 @@ import BlogDetailClient from "./BlogDetailClient";
 import { BASE_URL, SITE_URL } from "@/app/ui/baceurl";
 import type { Metadata } from "next";
 
-type StaticSlugItem = {
-  slug?: string | null;
-};
-
-type PaginatedSlugResponse = {
-  count?: number;
-  next?: string | null;
-  results?: StaticSlugItem[];
-};
-
 type BlogDetail = {
   title?: string | null;
   excerpt?: string | null;
   image?: string | null;
 };
 
-export const dynamicParams = true;
-export const revalidate = 60;
+export const dynamic = "force-static";
+export const dynamicParams = false;
 
-const PAGE_SIZE = 100;
-
-function toEndpointUrl(path: string, page: number) {
-  const url = new URL(path, BASE_URL);
-  url.searchParams.set("page", String(page));
-  url.searchParams.set("page_size", String(PAGE_SIZE));
-  return url.toString();
-}
-
-function normalizeItems(data: unknown): {
-  items: StaticSlugItem[];
-  next: string | null;
-  total?: number;
-} {
-  if (Array.isArray(data)) {
-    return { items: data as StaticSlugItem[], next: null };
-  }
-
-  if (data && typeof data === "object") {
-    const paginated = data as PaginatedSlugResponse;
-    return {
-      items: Array.isArray(paginated.results) ? paginated.results : [],
-      next: paginated.next ?? null,
-      total: paginated.count,
-    };
-  }
-
-  return { items: [], next: null };
-}
-
-async function fetchAllSlugItems(path: string, label: string): Promise<StaticSlugItem[]> {
-  const allItems: StaticSlugItem[] = [];
-  let page = 1;
-  let nextUrl: string | null = toEndpointUrl(path, page);
-
-  while (nextUrl) {
-    console.log(`[generateStaticParams] ${label} API URL: ${nextUrl}`);
-
-    const res = await fetch(nextUrl, { cache: "no-store" });
-    console.log(
-      `[generateStaticParams] ${label} response status: ${res.status} ${res.statusText}`
-    );
-
-    if (!res.ok) {
-      throw new Error(`${label} API failed with ${res.status} at ${nextUrl}`);
+export async function generateStaticParams(): Promise<{ slug: string }[]> {
+  const paths: { slug: string }[] = [];
+  try {
+    const res = await fetch(`${BASE_URL}/api/blogs/`);
+    if (res.ok) {
+      const data = await res.json();
+      const blogs = Array.isArray(data)
+        ? data
+        : Array.isArray(data?.results)
+        ? data.results
+        : [];
+      blogs.forEach((blog: any) => {
+        if (blog?.slug && typeof blog.slug === "string" && blog.slug.trim().length > 0) {
+          paths.push({ slug: blog.slug.trim() });
+        }
+        if (blog?.id !== undefined && blog?.id !== null) {
+          paths.push({ slug: String(blog.id) });
+        }
+      });
+      if (paths.length > 0) {
+        return paths;
+      }
     }
-
-    const data = await res.json();
-    const { items, next, total } = normalizeItems(data);
-    console.log(
-      `[generateStaticParams] ${label} page ${page} returned ${items.length} item(s)${
-        typeof total === "number" ? ` of ${total}` : ""
-      }`
-    );
-
-    allItems.push(...items);
-    nextUrl = next ? new URL(next, BASE_URL).toString() : null;
-    page += 1;
+  } catch {
+    // Fallback when backend is not running during static build
   }
 
-  console.log(`[generateStaticParams] ${label} total fetched: ${allItems.length}`);
-  return allItems;
+  return [
+    { slug: "why-do-some-ev-charging-projects-fail-while-others-succeed" },
+    { slug: "how-to-start-an-ev-charging-station-in-india" },
+  ];
 }
 
 async function fetchBlogDetail(slug: string): Promise<BlogDetail | null> {
   try {
     const url = new URL(`/api/blogs/${encodeURIComponent(slug)}/`, BASE_URL).toString();
-    const res = await fetch(url, { next: { revalidate: 60 } });
+    const res = await fetch(url, { cache: "no-store" });
     if (res.ok) {
-      return (await res.json()) as BlogDetail;
+      const text = await res.text();
+      if (text && text.trim().length > 0) {
+        return JSON.parse(text) as BlogDetail;
+      }
     }
-  } catch (err) {
-    console.error("Error fetching blog detail:", err);
+  } catch {
+    // Return null fallback
   }
   return null;
-}
-
-export async function generateStaticParams(): Promise<{ slug: string }[]> {
-  console.log(`[generateStaticParams] Fetching slugs directly from backend: ${BASE_URL}`);
-
-  try {
-    const blogs = await fetchAllSlugItems("/api/blogs/", "blogs");
-    const items = [...blogs];
-
-    const slugs = Array.from(
-      new Set(
-        items
-          .map((item) => item?.slug?.trim())
-          .filter((slug): slug is string => Boolean(slug))
-      )
-    );
-
-    console.log(`[generateStaticParams] Successfully fetched ${slugs.length} unique slugs from backend.`);
-    return slugs.map((slug) => ({ slug }));
-  } catch (error) {
-    console.error("[generateStaticParams] Error fetching backend slugs:", error);
-    return [];
-  }
 }
 
 export async function generateMetadata({
@@ -156,3 +95,4 @@ export async function generateMetadata({
 export default function BlogDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   return <BlogDetailClient params={params} />;
 }
+

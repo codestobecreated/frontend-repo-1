@@ -52,10 +52,15 @@ export default function BlogDetailClient({ params }: { params: Promise<{ slug: s
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const res = await fetch(`${BASE_URL}/api/blogs/${encodeURIComponent(slug)}/`);
+        const res = await fetch(`${BASE_URL}/api/blogs/${encodeURIComponent(slug)}/`, {
+          cache: "no-store",
+        });
         if (res.ok) {
-          const data = await res.json();
-          setPost(data);
+          const text = await res.text();
+          if (text && text.trim().length > 0) {
+            const data = JSON.parse(text);
+            setPost(data);
+          }
         }
       } catch (err) {
         console.error("Failed to fetch blog post:", err);
@@ -120,7 +125,7 @@ export default function BlogDetailClient({ params }: { params: Promise<{ slug: s
 
   const imageUrl = post.image
     ? (post.image.startsWith("http") ? post.image : `${BASE_URL}${post.image.startsWith("/") ? "" : "/"}${post.image}`)
-    : "/blog/blog_img.png";
+    : "/blog/blog_img.webp";
   const subtopics = post.subtopics && post.subtopics.length > 0 ? post.subtopics : [];
 
   // Fallback category tags
@@ -156,7 +161,14 @@ export default function BlogDetailClient({ params }: { params: Promise<{ slug: s
             </div>
 
             <div className="w-full md:w-56 h-36 md:h-36 rounded-xl overflow-hidden shadow-lg border border-white/10 flex-shrink-0">
-              <img src={imageUrl} alt={post.title} className="w-full h-full object-cover" />
+              <img
+                src={imageUrl}
+                alt={post.title}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.src = "/blog/blog_img.webp";
+                }}
+              />
             </div>
           </div>
         </div>

@@ -12,7 +12,7 @@ import {
   FaArrowLeft, FaCar, FaInfoCircle
 } from "react-icons/fa";
 import { IoMdBatteryCharging } from "react-icons/io";
-import { BASE_URL } from "@/app/ui/baceurl";
+import { BASE_URL, SITE_URL } from "@/app/ui/baceurl";
 
 interface Review {
   id: number;
@@ -49,6 +49,7 @@ interface Station {
   avg_rating?: number;
   total_reviews?: number;
   reviews?: Review[];
+  faq_schema?: string;
 }
 
 const generateSlug = (name: string, city: string) => {
@@ -180,36 +181,44 @@ export default function LocationDetailClient() {
 
   const stationSchema = {
     "@context": "https://schema.org",
-    "@type": ["LocalBusiness", "EVChargingStation"],
-    "name": `${station.name} - Relux Electric EV Charging Station`,
-    "description": station.about_text || `Fast EV charging station at ${station.name}, ${station.city}. Equipped with ${station.charger_power} ${station.charger_connector} chargers.`,
-    "url": typeof window !== "undefined" ? window.location.href : `https://reluxelectric.com/locations/${slug}`,
-    "telephone": "+91-9884866993",
-    "address": {
-      "@type": "PostalAddress",
-      "streetAddress": station.address || station.name,
-      "addressLocality": station.city,
-      "addressRegion": station.state || "Tamil Nadu",
-      "addressCountry": "IN",
-    },
-    "geo": {
-      "@type": "GeoCoordinates",
-      "latitude": latNum,
-      "longitude": lngNum,
-    },
-    "openingHoursSpecification": {
-      "@type": "OpeningHoursSpecification",
-      "dayOfWeek": [
-        "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
-      ],
-      "opens": "00:00",
-      "closes": "23:59",
-    },
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": displayRating,
-      "reviewCount": displayReviewCount,
-    },
+    "@graph": [
+      {
+        "@type": ["LocalBusiness", "EVChargingStation"],
+        "@id": `${SITE_URL}/locations/${slug}#station`,
+        "name": `${station.name} - Relux Electric EV Charging Station`,
+        "description": station.about_text || `Fast EV charging station at ${station.name}, ${station.city}. Equipped with ${station.charger_power} ${station.charger_connector} chargers.`,
+        "url": typeof window !== "undefined" ? window.location.href : `${SITE_URL}/locations/${slug}`,
+        "telephone": "+91-9884866993",
+        "parentOrganization": { "@id": `${SITE_URL}/#organization` },
+        "brand": { "@id": `${SITE_URL}/#organization` },
+        "operator": { "@id": `${SITE_URL}/#organization` },
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": station.address || station.name,
+          "addressLocality": station.city,
+          "addressRegion": station.state || "Tamil Nadu",
+          "addressCountry": "IN",
+        },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": latNum,
+          "longitude": lngNum,
+        },
+        "openingHoursSpecification": {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": [
+            "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
+          ],
+          "opens": "00:00",
+          "closes": "23:59",
+        },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": displayRating,
+          "reviewCount": displayReviewCount,
+        },
+      },
+    ],
   };
 
   return (
@@ -219,6 +228,12 @@ export default function LocationDetailClient() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(stationSchema) }}
       />
+      {station.faq_schema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: station.faq_schema }}
+        />
+      )}
       <div className="max-w-7xl mx-auto px-4 md:px-6">
 
         {/* 🟢 1. HEADER ROW: BACK BUTTON & BREADCRUMBS */}
@@ -308,7 +323,7 @@ export default function LocationDetailClient() {
                   fill
                   className="object-cover hover:scale-105 transition-transform duration-700"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent" />
                 <div className="absolute bottom-4 left-4 right-4 flex justify-between items-center text-xs">
                   <span className="bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10 text-white font-bold">
                     Relux Charging Station
@@ -387,12 +402,22 @@ export default function LocationDetailClient() {
                 <span className="w-2 h-6 bg-[#00b14f] rounded-full" />
                 About {station.name} EV Charging Station
               </h2>
-              <p className="text-white/70 text-sm md:text-base leading-relaxed">
-                {station.about_text || `Relux EV charging station at ${station.name}, ${station.city} offers reliable, high-speed DC fast charging for all compatible electric vehicles. The station is equipped with high-performance dual-gun chargers, ensuring a safe, fast, and seamless charging experience.`}
-              </p>
-              <p className="text-white/70 text-sm md:text-base leading-relaxed">
-                Whether you are traveling locally or on a long highway drive, charge your EV conveniently while you relax at the nearby amenities.
-              </p>
+              {station.about_text ? (
+                station.about_text.split('\n').filter(p => p.trim() !== '').map((paragraph, idx) => (
+                  <p key={idx} className="text-white/70 text-sm md:text-base leading-relaxed">
+                    {paragraph}
+                  </p>
+                ))
+              ) : (
+                <>
+                  <p className="text-white/70 text-sm md:text-base leading-relaxed">
+                    Relux EV charging station at {station.name}, {station.city} offers reliable, high-speed DC fast charging for all compatible electric vehicles. The station is equipped with high-performance dual-gun chargers, ensuring a safe, fast, and seamless charging experience.
+                  </p>
+                  <p className="text-white/70 text-sm md:text-base leading-relaxed">
+                    Whether you are traveling locally or on a long highway drive, charge your EV conveniently while you relax at the nearby amenities.
+                  </p>
+                </>
+              )}
               <div className="flex flex-wrap gap-2 pt-2">
                 {["Reliable", "Fast Charging", "Safe & Secure", "User Friendly"].map((tag) => (
                   <span key={tag} className="px-3 py-1 bg-[#00b14f]/10 border border-[#00b14f]/30 text-[#00b14f] text-xs font-bold rounded-full">
@@ -454,7 +479,7 @@ export default function LocationDetailClient() {
 
             {/* Embed Map Card */}
             <div className="lg:col-span-7">
-              <div className="relative w-full h-[280px] md:h-[320px] rounded-2xl overflow-hidden border border-white/10 bg-zinc-900 flex items-center justify-center">
+              <div className="relative w-full h-70 md:h-80 rounded-2xl overflow-hidden border border-white/10 bg-zinc-900 flex items-center justify-center">
                 <iframe
                   title="Station Location Map"
                   width="100%"
@@ -464,7 +489,7 @@ export default function LocationDetailClient() {
                   marginHeight={0}
                   marginWidth={0}
                   src={`https://maps.google.com/maps?q=${latNum},${lngNum}&z=14&output=embed`}
-                  className="w-full h-full filter invert-[90%] hue-rotate-180 brightness-95"
+                  className="w-full h-full filter invert-90 hue-rotate-180 brightness-95"
                 />
               </div>
             </div>
@@ -640,7 +665,7 @@ export default function LocationDetailClient() {
         </div>
 
         {/* 🟢 11. CTA BANNER */}
-        <div className="bg-gradient-to-r from-[#00b14f]/20 via-zinc-950 to-zinc-950 border border-[#00b14f]/30 rounded-3xl p-8 flex flex-col md:flex-row justify-between items-center gap-6">
+        <div className="bg-linear-to-r from-[#00b14f]/20 via-zinc-950 to-zinc-950 border border-[#00b14f]/30 rounded-3xl p-8 flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="space-y-2 text-center md:text-left">
             <h2 className="text-2xl md:text-3xl font-black text-white">Charge Your EV with Relux</h2>
             <p className="text-white/60 text-sm">Fast, reliable & safe charging across India's rapidly growing network.</p>

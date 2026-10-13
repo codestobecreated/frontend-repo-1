@@ -7,6 +7,7 @@ import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { BASE_URL } from "@/app/ui/baceurl";
 
 interface BlogPost {
+  id: number;
   title: string;
   excerpt: string;
   content: string;
@@ -65,17 +66,23 @@ export default function HomeUpdates() {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
+    let isMounted = true;
     const fetchBlogs = async () => {
       try {
         const blogs = await fetchAllApiItems<BlogPost>("/api/blogs/");
-        setBlogPosts(blogs);
-      } catch (error) {
-        console.error("Error fetching blogs for updates:", error);
+        if (Array.isArray(blogs) && blogs.length > 0 && isMounted) {
+          setBlogPosts(blogs);
+        }
+      } catch {
+        // Backend unavailable
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
     fetchBlogs();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const nextSlide = () => {
@@ -104,18 +111,7 @@ export default function HomeUpdates() {
     }
   };
 
-  if (loading) {
-    return (
-      <section className="relative w-full py-12 md:py-32 bg-black overflow-hidden flex items-center justify-center min-h-100">
-        <div className="text-center">
-          <div className="w-10 h-10 border-4 border-[#00b14f] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-xs font-bold uppercase tracking-widest text-white/40">Loading Updates...</p>
-        </div>
-      </section>
-    );
-  }
-
-  if (blogPosts.length === 0) {
+  if (loading || blogPosts.length === 0) {
     return null;
   }
 
@@ -168,16 +164,19 @@ export default function HomeUpdates() {
                 key={i}
                 className={`update-card-container ${i === currentIndex ? 'active' : ''}`}
               >
-                <Link href={`/activity-hub/blogs/${post.slug}`}>
+                <Link href={`/activity-hub/blogs/${post.slug || post.id}`}>
                   <article
                     className="group flex flex-col bg-[#0a0a0a] rounded-3xl overflow-hidden border border-white/5 hover:border-[#00b14f]/30 transition-all duration-500 h-full cursor-pointer"
                   >
                     {/* Image Container with Floating Tag */}
                     <div className="relative aspect-16/10 overflow-hidden shrink-0">
                       <img
-                        src={post.image ? (post.image.startsWith('http') ? post.image : `${BASE_URL}${post.image.startsWith('/') ? '' : '/'}${post.image}`) : "/blog/blog_img.png"}
+                        src={post.image ? (post.image.startsWith('http') ? post.image : (post.image.startsWith('/') ? post.image : `/${post.image}`)) : "/blog/blog_img.webp"}
                         alt={post.title}
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        onError={(e) => {
+                          e.currentTarget.src = "/blog/blog_img.webp";
+                        }}
                       />
                       <div className="absolute top-4 left-4 z-10">
                         <span className="px-4 py-1.5 bg-[#00b14f] text-white text-[10px] font-bold rounded-full uppercase tracking-wider shadow-lg">

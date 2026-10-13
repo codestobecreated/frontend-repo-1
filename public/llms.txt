@@ -25,8 +25,10 @@
 
 ## Main Navigation & Resources
 - [Relux Electric Homepage](https://reluxelectric.com/)
+- [EV Business Solutions Hub](https://reluxelectric.com/business)
 - [EV Charging Station Franchise Program](https://reluxelectric.com/business/franchise)
 - [Zero Investment Partner Program](https://reluxelectric.com/business/zero-investment)
+- [Charger as a Service (CaaS)](https://reluxelectric.com/business/caas)
 - [EV Chargers & Products Catalog](https://reluxelectric.com/business/products)
 - [Turnkey Charging Services](https://reluxelectric.com/business/service)
 - [Interactive Charging Station Map & Directory](https://reluxelectric.com/locations)

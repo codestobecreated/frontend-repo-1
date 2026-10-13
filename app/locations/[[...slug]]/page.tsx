@@ -54,6 +54,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   let title = "EV Charging Station Locations in India | Relux Electric";
   let description =
     "Find Relux Electric EV charging stations near you. Locate AC and fast DC charging points across our rapidly expanding national network.";
+  let keywords = [
+    "EV charging station near me",
+    "Relux charging stations map",
+    "locate EV charger India",
+    "DC fast charger locations",
+  ];
 
   if (slugPath) {
     const formattedName = slugPath
@@ -62,17 +68,33 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       .join(" ");
     title = `${formattedName} EV Charging Station | Relux Electric`;
     description = `Find and charge at ${formattedName} EV charging station location. Fast DC & AC chargers available by Relux Electric.`;
+    
+    // Fetch real SEO data from API if available
+    try {
+      const res = await fetch(`${BASE_URL}/api/locations/`, { cache: 'no-store' });
+      if (res.ok) {
+        const locations = await res.json();
+        const matchedLoc = locations.find((loc: any) => {
+           const s = loc.name && loc.city ? `${loc.name}-${loc.city}`.toLowerCase().replace(/[^\w\s-]/g, "").replace(/[\s_-]+/g, "-").replace(/^-+|-+$/g, "") : null;
+           return s === slugPath;
+        });
+        if (matchedLoc) {
+           if (matchedLoc.seo_title) title = matchedLoc.seo_title;
+           if (matchedLoc.meta_description) description = matchedLoc.meta_description;
+           if (matchedLoc.seo_keywords) {
+              keywords = matchedLoc.seo_keywords.split(",").map((k: string) => k.trim());
+           }
+        }
+      }
+    } catch (e) {
+      console.error("Failed to fetch location SEO data:", e);
+    }
   }
 
   return {
     title,
     description,
-    keywords: [
-      "EV charging station near me",
-      "Relux charging stations map",
-      "locate EV charger India",
-      "DC fast charger locations",
-    ],
+    keywords,
     alternates: {
       canonical: canonicalUrl,
     },

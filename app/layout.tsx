@@ -30,7 +30,7 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   title: "Relux Electric | EV Charging Station Franchise in India",
   description:
-    "Join Relux Electric, India's No.1 EV Charging Station Network Provider. We offer EV franchise opportunities and end-to-end charging infrastructure solutions across India.",
+    "Join Relux Electric, India's top EV Charging Station Network. Explore profitable EV franchise opportunities & fast charging infrastructure across India.",
   keywords: [
     "EV Charging Station Network Provider",
     "EV charging station franchise",
@@ -135,12 +135,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
         <link rel="dns-prefetch" href="https://core.reluxelectric.com" />
-        <link
-          rel="preload"
-          href="/images/relux-electric-tamilnadu-banner.webp"
-          as="image"
-          fetchPriority="high"
-        />
+
         {/* Google Preferred Sources – helps users follow Relux Electric in Google Search / AI Mode */}
         <Script
           async
@@ -207,60 +202,67 @@ export default function RootLayout({
           type="application/ld+json"
           suppressHydrationWarning
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify([
-              {
-                "@context": "https://schema.org",
-                "@type": "WebSite",
-                "name": "Relux Electric",
-                "alternateName": [
-                  "Relux Electric EV Charging Station Franchise",
-                  "Relux Electric India"
-                ],
-                "url": SITE_URL
-              },
-              {
-                "@context": "https://schema.org",
-                "@type": "Organization",
-                "name": "Relux Electric",
-                "legalName": "Relux Electric India Private Limited",
-                "url": SITE_URL,
-                "logo": `${SITE_URL}/assets/hero_franchise.png`,
-                "description": "India's leading EV Charging Station Network Provider & Franchise Operator.",
-                "telephone": "+91-9884866993",
-                "email": "enquiry@reluxelectric.com",
-                "address": {
-                  "@type": "PostalAddress",
-                  "streetAddress": "No:16/8, PRV Towers, Ground floor, Grand Southern Trunk Rd, Ramapuram, Guindy",
-                  "addressLocality": "Chennai",
-                  "addressRegion": "Tamil Nadu",
-                  "postalCode": "600032",
-                  "addressCountry": "IN"
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "WebSite",
+                  "@id": `${SITE_URL}/#website`,
+                  "name": "Relux Electric",
+                  "alternateName": [
+                    "Relux Electric EV Charging Station Franchise",
+                    "Relux Electric India"
+                  ],
+                  "url": SITE_URL,
+                  "publisher": { "@id": `${SITE_URL}/#organization` }
                 },
-                "contactPoint": {
-                  "@type": "ContactPoint",
+                {
+                  "@type": "Organization",
+                  "@id": `${SITE_URL}/#organization`,
+                  "name": "Relux Electric",
+                  "legalName": "Relux Electric India Private Limited",
+                  "url": SITE_URL,
+                  "logo": `${SITE_URL}/assets/hero_franchise.png`,
+                  "description": "India's leading EV Charging Station Network Provider & Franchise Operator.",
                   "telephone": "+91-9884866993",
-                  "contactType": "customer service",
-                  "areaServed": "IN",
-                  "availableLanguage": ["English", "Tamil", "Hindi"]
-                },
-                "sameAs": [
-                  "https://www.facebook.com/reluxelectric",
-                  "https://www.instagram.com/reluxelectric/",
-                  "https://www.linkedin.com/company/relux-electric/",
-                  "https://www.youtube.com/@reluxelectric7550",
-                  "https://x.com/reluxelectric"
-                ],
-                "knowsAbout": [
-                  "Electric Vehicle Charging Infrastructure",
-                  "EV Charging Station Franchise",
-                  "DC Fast Chargers",
-                  "OCPP Charging Protocol",
-                  "Unified Bharat e-Charge Protocol (UBC)",
-                  "Beckn Protocol EV Charging",
-                  "Clean Energy & E-Mobility"
-                ]
-              }
-            ])
+                  "email": "enquiry@reluxelectric.com",
+                  "address": {
+                    "@type": "PostalAddress",
+                    "streetAddress": "No:16/8, PRV Towers, Ground floor, Grand Southern Trunk Rd, Ramapuram, Guindy",
+                    "addressLocality": "Chennai",
+                    "addressRegion": "Tamil Nadu",
+                    "postalCode": "600032",
+                    "addressCountry": "IN"
+                  },
+                  "contactPoint": {
+                    "@type": "ContactPoint",
+                    "telephone": "+91-9884866993",
+                    "contactType": "customer service",
+                    "areaServed": "IN",
+                    "availableLanguage": ["English", "Tamil", "Hindi"]
+                  },
+                  "sameAs": [
+                    "https://www.facebook.com/reluxelectric",
+                    "https://www.instagram.com/reluxelectric/",
+                    "https://www.linkedin.com/company/relux-electric/",
+                    "https://www.youtube.com/@reluxelectric7550",
+                    "https://x.com/reluxelectric"
+                  ],
+                  "knowsAbout": [
+                    "Electric Vehicle Charging Infrastructure",
+                    "EV Charging Station Franchise",
+                    "Fast & High-Speed AC/DC Chargers",
+                    "Range Anxiety Relief for EV Owners",
+                    "OCPP Charging Protocol",
+                    "Unified Bharat e-Charge Protocol (UBC)",
+                    "Beckn Protocol EV Charging",
+                    "Zero-Investment Partnership Models",
+                    "State & Institutional EV Infrastructure Deployments (TNGECL, GCC Chennai)",
+                    "Clean Energy & E-Mobility"
+                  ]
+                }
+              ]
+            })
           }}
         />
         <WebMCPRegistry />

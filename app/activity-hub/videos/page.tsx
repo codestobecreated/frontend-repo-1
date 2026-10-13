@@ -85,7 +85,7 @@ const getFullImageUrl = (path: string) => {
 };
 
 const ArticleSection = ({ title, articles }: { title: string, articles: BlogItem[] }) => (
-  <div className="mb-10 md:mb-14">
+  <div id="articles-insights" className="mb-10 md:mb-14 scroll-mt-24 md:scroll-mt-28">
     <div className="flex items-center justify-between mb-4 md:mb-6 px-4 md:px-6">
       <div className="flex items-center gap-2 md:gap-3">
         <FiBookOpen className="text-[#00b14f] w-4 h-4 md:w-5 md:h-5" />
@@ -94,7 +94,7 @@ const ArticleSection = ({ title, articles }: { title: string, articles: BlogItem
     </div>
     <div className="flex gap-3 md:gap-5 overflow-x-auto pb-4 px-4 md:px-6 hide-scrollbar scroll-smooth">
       {articles.slice(0, 6).map((post, idx) => {
-        const itemLink = post.media_link || `/activity-hub/blogs/${post.slug}`;
+        const itemLink = post.media_link || `/activity-hub/blogs/${post.slug || post.id}`;
         const isExternal = itemLink.startsWith("http");
 
         return (
@@ -111,6 +111,9 @@ const ArticleSection = ({ title, articles }: { title: string, articles: BlogItem
                     alt={post.title} 
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-70 group-hover:opacity-100" 
                     loading="lazy"
+                    onError={(e) => {
+                      e.currentTarget.src = "/blog/blog_img.webp";
+                    }}
                   />
                   <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                     <div className="w-10 h-10 rounded-full bg-[#00b14f]/90 flex items-center justify-center shadow-lg">
@@ -136,6 +139,9 @@ const ArticleSection = ({ title, articles }: { title: string, articles: BlogItem
                     alt={post.title} 
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-70 group-hover:opacity-100" 
                     loading="lazy"
+                    onError={(e) => {
+                      e.currentTarget.src = "/blog/blog_img.webp";
+                    }}
                   />
                   <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                     <div className="w-10 h-10 rounded-full bg-[#00b14f]/90 flex items-center justify-center shadow-lg">
@@ -272,6 +278,19 @@ export default function VideoGallery() {
     }, 5000);
     return () => clearInterval(interval);
   }, [slides]);
+
+  // Smooth scroll to anchor hash (e.g. #articles-insights) on load
+  useEffect(() => {
+    if (!loading && typeof window !== "undefined" && window.location.hash) {
+      const hash = window.location.hash.replace("#", "");
+      setTimeout(() => {
+        const el = document.getElementById(hash);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 250);
+    }
+  }, [loading]);
 
   const speechVideos = videos.filter(v => v.category === "Speech" || v.category === "Interview");
   const eventVideos = videos.filter(v => v.category === "Event" || v.category === "Meetup");

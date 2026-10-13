@@ -1,23 +1,36 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { FiPhone, FiMail, FiMapPin, FiSend } from "react-icons/fi";
 import { BASE_URL } from "@/app/ui/baceurl";
 import { STATES as states, CITIES as citiesByState } from "@/app/ui/states-cities";
 
 
 export default function ContactForm() {
+  const searchParams = useSearchParams();
   const [selectedState, setSelectedState] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [subject, setSubject] = useState("");
+  const [subject, setSubject] = useState("Charger as a Service (CaaS)");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    const paramSubject = searchParams.get("subject");
+    if (paramSubject) {
+      if (paramSubject.toLowerCase().includes("caas") || paramSubject.toLowerCase().includes("charger as a service")) {
+        setSubject("Charger as a Service (CaaS)");
+      } else {
+        setSubject(paramSubject);
+      }
+    }
+  }, [searchParams]);
 
   const handleStateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedState(e.target.value);
@@ -335,15 +348,27 @@ export default function ContactForm() {
                       </div>
                       <div>
                         <label className="flex gap-1 text-[11px] font-extrabold text-white mb-2 uppercase tracking-wider">
-                          Subject
+                          Subject <span className="text-red-500">*</span>
                         </label>
-                        <input 
-                          type="text" 
-                          placeholder="Briefly describe your inquiry"
-                          value={subject}
-                          onChange={(e) => setSubject(e.target.value)}
-                          className="w-full bg-[#242630] border border-transparent rounded-md px-4 py-3 text-[13px] text-white focus:outline-none focus:border-[#4caf50]/50 transition-colors placeholder:text-[#5e636e] font-medium"
-                        />
+                        <div className="relative">
+                          <select 
+                            value={subject}
+                            onChange={(e) => setSubject(e.target.value)}
+                            required
+                            className="w-full bg-[#242630] border border-transparent rounded-md px-4 py-3 text-[13px] text-white focus:outline-none focus:border-[#4caf50]/50 transition-colors appearance-none font-medium [&>option]:text-white [&>option]:bg-[#242630]"
+                          >
+                            <option value="" disabled hidden className="text-[#5e636e]">Select Subject</option>
+                            <option value="Charger as a Service (CaaS)">Charger as a Service (CaaS)</option>
+                            <option value="Franchise Opportunity">Franchise Opportunity</option>
+                            <option value="Zero Investment Model">Zero Investment Model</option>
+                            <option value="General Inquiry">General Inquiry</option>
+                            <option value="Technical Support">Technical Support</option>
+                            <option value="Other">Other</option>
+                          </select>
+                          <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                             <svg className="w-4 h-4 text-white/50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                          </div>
+                        </div>
                       </div>
                     </div>
 
@@ -394,7 +419,7 @@ export default function ContactForm() {
                   <FiMapPin className="text-[#4caf50]" />
                   <span>Guindy, Chennai</span>
                 </div>
-                <a href="https://maps.app.goo.gl/..." target="_blank" className="text-[#4caf50] hover:underline">Open in Maps</a>
+                <a href="https://maps.app.goo.gl/..." target="_blank" rel="noopener noreferrer" className="text-[#4caf50] hover:underline">Open in Maps</a>
               </div>
             </div>
           </div>

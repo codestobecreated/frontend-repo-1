@@ -5,19 +5,30 @@ import Image from "next/image";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { BASE_URL } from "@/app/ui/baceurl";
 
+const BACKEND_ABOUT_IMAGES = [
+  { src: "/media/home_about/2_eJX1bZN.jpg", alt: "Relux Electric Charging Station" },
+  { src: "/media/home_about/4_Pe6MSPN.jpg", alt: "Relux Super Hub Infrastructure" },
+  { src: "/media/home_about/ChatGPT_Image_May_18_2026_10_47_55_AM.png", alt: "Relux High-Speed EV Charger" },
+  { src: "/media/home_about/Jass.webp", alt: "Relux Highway Hub" },
+];
+
 export default function HomeAbout() {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [images, setImages] = useState<{ src: string, alt: string }[]>([]);
+  const [images, setImages] = useState<{ src: string, alt: string }[]>(BACKEND_ABOUT_IMAGES);
 
   useEffect(() => {
+    let isMounted = true;
     const fetchImages = async () => {
       try {
         const response = await fetch(`${BASE_URL}/api/home-about-images/`);
         if (response.ok) {
           const data = await response.json();
-          if (data && data.length > 0) {
+          if (Array.isArray(data) && data.length > 0 && isMounted) {
             setImages(data.map((item: any) => {
-              const imageUrl = item.image.startsWith('http') ? item.image : `${BASE_URL}${item.image}`;
+              const rawImg = item.image || "";
+              const imageUrl = rawImg.startsWith('http')
+                ? rawImg
+                : (rawImg.startsWith('/') ? rawImg : `/${rawImg}`);
               return {
                 src: imageUrl,
                 alt: item.alt_text || "Relux Electric",
@@ -25,12 +36,15 @@ export default function HomeAbout() {
             }));
           }
         }
-      } catch (error) {
-        console.error("Error fetching about images:", error);
+      } catch {
+        // Silently retain default backend images
       }
     };
 
     fetchImages();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   useEffect(() => {

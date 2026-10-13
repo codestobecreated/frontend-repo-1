@@ -17,8 +17,8 @@ export default function HomePartners() {
       <div className="max-w-7xl mx-auto px-6 mb-8 flex flex-col md:flex-row items-center justify-center gap-4">
         <div className="hidden md:block h-px flex-1 max-w-37.5 bg-linear-to-r from-transparent to-white/20" />
         <h2 className="text-white/80 text-[13px] md:text-[14px] font-semibold tracking-[0.2em] uppercase text-center leading-relaxed">
-          Recognised & Partnered <br className="md:hidden" />
-          <span className="text-[#00b14f]">with Industry Leaders</span>
+
+          Our <span className="text-[#00b14f]">Trusted Partners</span>
         </h2>
         <div className="hidden md:block h-px flex-1 max-w-37.5 bg-linear-to-l from-transparent to-white/20" />
       </div>

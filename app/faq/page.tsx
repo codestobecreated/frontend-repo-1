@@ -27,17 +27,30 @@ export const metadata: Metadata = {
 };
 
 export default function FaqPage() {
-  const faqSchema = {
+  const pageSchema = {
     "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": ALL_FAQS.map((faq) => ({
-      "@type": "Question",
-      "name": faq.question,
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": faq.answer,
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": `${SITE_URL}/faq#webpage`,
+        "url": `${SITE_URL}/faq`,
+        "name": "Frequently Asked Questions (FAQ) | Relux Electric EV Charging",
+        "description": "Find answers to common questions about Relux Electric EV charging station franchise opportunities, investment, installation, pricing, driver app, and technical support.",
+        "publisher": { "@id": `${SITE_URL}/#organization` },
       },
-    })),
+      {
+        "@type": "FAQPage",
+        "@id": `${SITE_URL}/faq#faq`,
+        "mainEntity": ALL_FAQS.map((faq) => ({
+          "@type": "Question",
+          "name": faq.question,
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": faq.answer,
+          },
+        })),
+      },
+    ],
   };
 
   return (
@@ -45,7 +58,7 @@ export default function FaqPage() {
       {/* Schema for SEO */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(pageSchema) }}
       />
 
       <FaqClient />

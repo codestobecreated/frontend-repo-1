@@ -21,6 +21,7 @@ import { motion } from "framer-motion";
 import { BASE_URL } from "@/app/ui/baceurl";
 
 interface BlogPost {
+  id: number;
   title: string;
   excerpt: string;
   content: string;
@@ -149,16 +150,19 @@ export default function BlogsPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-16 items-stretch">
           {blogPosts.map((post, i) => (
-            <Link key={i} href={`/activity-hub/blogs/${post.slug}`} className="group block relative h-full">
+            <Link key={i} href={`/activity-hub/blogs/${post.slug || post.id}`} className="group block relative h-full">
               <div className="h-full flex flex-col justify-between bg-gradient-to-br from-white/[0.03] to-transparent rounded-sm p-5 border border-white/5 group-hover:border-[#00b14f]/30 transition-all duration-500 hover:shadow-[0_20px_50px_rgba(0,177,79,0.05)] relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#00b14f] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 
                 <div className="flex-1 flex flex-col">
                   <div className="relative aspect-video rounded-sm overflow-hidden mb-6 border border-white/5 bg-zinc-900 shrink-0">
                     <img
-                      src={post.image ? (post.image.startsWith('http') ? post.image : `${BASE_URL}${post.image.startsWith('/') ? '' : '/'}${post.image}`) : "/blog/blog_img.png"}
+                      src={post.image ? (post.image.startsWith('http') ? post.image : `${BASE_URL}${post.image.startsWith('/') ? '' : '/'}${post.image}`) : "/blog/blog_img.webp"}
                       alt={post.title}
                       className="w-full h-full object-cover transition-transform duration-[1.5s] group-hover:scale-110 opacity-60 group-hover:opacity-100"
+                      onError={(e) => {
+                        e.currentTarget.src = "/blog/blog_img.webp";
+                      }}
                     />
                     {post.tag && (
                       <div className="absolute top-4 left-4 bg-[#00b14f] text-white text-[8px] font-black px-3 py-1.5 rounded-sm uppercase tracking-widest shadow-lg">

@@ -4,6 +4,7 @@ import { BASE_URL } from "@/app/ui/baceurl";
 export const dynamic = "force-static";
 
 interface BlogPost {
+  id?: number | string;
   slug: string;
   created_at?: string;
 }
@@ -93,7 +94,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     const blogs = await fetchAllApiItems<BlogPost>("/api/blogs/");
     const blogEntries = blogs.map((blog) => ({
-      url: `${baseUrl}/activity-hub/blogs/${blog.slug}`,
+      url: `${baseUrl}/activity-hub/blogs/${blog.slug || blog.id}`,
       lastModified: blog.created_at ? new Date(blog.created_at) : new Date(),
       changeFrequency: "weekly" as const,
       priority: 0.6,

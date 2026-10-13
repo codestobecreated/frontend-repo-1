@@ -508,9 +508,9 @@ const LocationMapPro = () => {
                   Relux Network
                 </p>
               </div>
-              <h2 className="text-xl font-black text-white lg:text-black dark:lg:text-white tracking-tight">
+              <h1 className="text-xl font-black text-white lg:text-black dark:lg:text-white tracking-tight">
                 Charging <span className="text-[#00b14f]">Locations</span>
-              </h2>
+              </h1>
             </div>
             <button
               onClick={() => setIsSidebarOpen(false)}

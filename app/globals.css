@@ -9,13 +9,16 @@ html {
   --foreground: #171717;
   --font-sans: "Poppins", "Poppins Fallback", var(--font-poppins), sans-serif;
   --font-poppins: "Poppins", "Poppins Fallback", var(--font-poppins), sans-serif;
+  --font-geist-sans: "Poppins", "Poppins Fallback", var(--font-poppins), sans-serif;
+  --font-geist-mono: "Poppins", "Poppins Fallback", var(--font-poppins), sans-serif;
+  --font-mono: "Poppins", "Poppins Fallback", var(--font-poppins), sans-serif;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: "Poppins", "Poppins Fallback", var(--font-poppins), sans-serif;
-  --font-mono: var(--font-geist-mono);
+  --font-mono: "Poppins", "Poppins Fallback", var(--font-poppins), sans-serif;
   --font-poppins: "Poppins", "Poppins Fallback", var(--font-poppins), sans-serif;
 }
 
@@ -29,7 +32,7 @@ html {
 *,
 *::before,
 *::after {
-  font-family: "Poppins", "Poppins Fallback", var(--font-poppins), sans-serif;
+  font-family: "Poppins", "Poppins Fallback", var(--font-poppins), sans-serif !important;
 }
 
 html,
@@ -39,8 +42,17 @@ body {
   font-family: "Poppins", "Poppins Fallback", var(--font-poppins), sans-serif !important;
 }
 
+button,
+input,
+optgroup,
+select,
+textarea {
+  font-family: "Poppins", "Poppins Fallback", var(--font-poppins), sans-serif !important;
+}
+
 .font-sans,
-.font-poppins {
+.font-poppins,
+.font-mono {
   font-family: "Poppins", "Poppins Fallback", var(--font-poppins), sans-serif !important;
 }
 

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Poppins } from "next/font/google";
+import { Poppins } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import Navbar from "../components/Navbar";
@@ -7,24 +7,12 @@ import Footer from "../components/Footer";
 import WebMCPRegistry from "../components/WebMCPRegistry";
 import { SITE_URL } from "@/app/ui/baceurl";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-  display: "swap",
-  preload: true,
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-  display: "swap",
-});
-
 const poppins = Poppins({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800", "900"],
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
   variable: "--font-poppins",
   display: "swap",
+  preload: true,
 });
 
 export const metadata: Metadata = {
@@ -124,7 +112,7 @@ export default function RootLayout({
       lang="en"
       suppressHydrationWarning
       data-scroll-behavior="smooth"
-      className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable} h-full antialiased`}
+      className={`${poppins.variable} font-poppins h-full antialiased`}
     >
       <head suppressHydrationWarning>
         {/* WebMCP Origin Trial Token */}
@@ -134,7 +122,7 @@ export default function RootLayout({
         />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet" />
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
         <link rel="dns-prefetch" href="https://core.reluxelectric.com" />
 
@@ -198,7 +186,11 @@ export default function RootLayout({
           `}
         </Script>
       </head>
-      <body suppressHydrationWarning className="min-h-full flex flex-col pt-24 bg-black">
+      <body
+        suppressHydrationWarning
+        className={`min-h-full flex flex-col pt-24 bg-black font-poppins ${poppins.className}`}
+        style={{ fontFamily: '"Poppins", "Poppins Fallback", var(--font-poppins), sans-serif' }}
+      >
         {/* JSON-LD Structured Data Schema */}
         <script
           type="application/ld+json"

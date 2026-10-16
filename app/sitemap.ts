@@ -6,6 +6,7 @@ export const dynamic = "force-static";
 interface BlogPost {
   id?: number | string;
   slug: string;
+  title?: string;
   created_at?: string;
 }
 

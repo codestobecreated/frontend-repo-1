@@ -189,6 +189,7 @@ export default function AdminPanel() {
 
       if (res.ok && data.success) {
         const uName = data.manager?.username || u;
+        const token = data.token || "relux@admin2025";
         localStorage.setItem("relux_admin_token", token);
         localStorage.setItem("relux_admin_username", uName);
         localStorage.setItem("relux_admin_role", data.manager?.role || "manager");

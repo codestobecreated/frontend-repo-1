@@ -1,23 +1,52 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 
 export default function HomeCTABanner() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setShouldLoadVideo(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "200px" }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <section className="relative w-full py-20 md:py-28 overflow-hidden">
+    <section ref={sectionRef} className="relative w-full py-20 md:py-28 overflow-hidden bg-black">
       {/* Background Video with Overlay */}
       <div className="absolute inset-0 w-full h-full overflow-hidden">
-        <video 
-          autoPlay 
-          loop 
-          muted 
-          playsInline 
-          poster="/images/city.jpg"
-          className="w-full h-full object-cover opacity-60"
-        >
-          <source src="/home_video/relux_drone.mp4" type="video/mp4" />
-        </video>
+        {shouldLoadVideo ? (
+          <video 
+            autoPlay 
+            loop 
+            muted 
+            playsInline 
+            preload="metadata"
+            poster="/images/city.jpg"
+            className="w-full h-full object-cover opacity-60 transition-opacity duration-1000"
+          >
+            <source src="/home_video/relux_drone.mp4" type="video/mp4" />
+          </video>
+        ) : (
+          <div 
+            className="w-full h-full bg-cover bg-center opacity-60"
+            style={{ backgroundImage: "url('/images/city.jpg')" }}
+          />
+        )}
         {/* Solid Dark Overlay */}
         <div className="absolute inset-0 bg-black/60 pointer-events-none" />
       </div>

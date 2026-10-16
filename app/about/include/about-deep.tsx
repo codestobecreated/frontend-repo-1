@@ -87,7 +87,7 @@ export default function AboutDeep() {
   return (
     <section
       className="relative w-full bg-black overflow-hidden font-poppins"
-      style={{ fontFamily: '"Poppins", "Poppins Fallback", var(--font-poppins), sans-serif' }}
+      style={{ fontFamily: '"Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}
     >
 
       {/* ══════════════════════════════════════════════

@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 @import "tailwindcss";
 
 html {
@@ -7,19 +8,19 @@ html {
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --font-sans: "Poppins", "Poppins Fallback", var(--font-poppins), sans-serif;
-  --font-poppins: "Poppins", "Poppins Fallback", var(--font-poppins), sans-serif;
-  --font-geist-sans: "Poppins", "Poppins Fallback", var(--font-poppins), sans-serif;
-  --font-geist-mono: "Poppins", "Poppins Fallback", var(--font-poppins), sans-serif;
-  --font-mono: "Poppins", "Poppins Fallback", var(--font-poppins), sans-serif;
+  --font-sans: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-poppins: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-geist-sans: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-geist-mono: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: "Poppins", "Poppins Fallback", var(--font-poppins), sans-serif;
-  --font-mono: "Poppins", "Poppins Fallback", var(--font-poppins), sans-serif;
-  --font-poppins: "Poppins", "Poppins Fallback", var(--font-poppins), sans-serif;
+  --font-sans: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-poppins: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -32,28 +33,38 @@ html {
 *,
 *::before,
 *::after {
-  font-family: "Poppins", "Poppins Fallback", var(--font-poppins), sans-serif !important;
+  font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
 }
 
 html,
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: "Poppins", "Poppins Fallback", var(--font-poppins), sans-serif !important;
+  font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
 }
 
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+span,
+a,
+li,
 button,
 input,
 optgroup,
 select,
 textarea {
-  font-family: "Poppins", "Poppins Fallback", var(--font-poppins), sans-serif !important;
+  font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
 }
 
 .font-sans,
 .font-poppins,
 .font-mono {
-  font-family: "Poppins", "Poppins Fallback", var(--font-poppins), sans-serif !important;
+  font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
 }
 
 /* ── Hero Partner Marquee ── */

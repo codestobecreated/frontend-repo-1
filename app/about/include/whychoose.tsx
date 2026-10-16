@@ -83,9 +83,8 @@ export default function WhyChooseUs() {
                         <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent" />
                         <div className="absolute bottom-8 left-8 right-8 z-10">
                             <h3 className="text-xl md:text-2xl font-black text-white tracking-tight uppercase mb-2 drop-shadow-md">Expert Engineering</h3>
-                            <div className="inline-block bg-black/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/15">
-                                <p className="text-[#00b14f] text-xs font-black uppercase tracking-[0.22em]">Relux Premium Standards</p>
-                            </div>
+                            <p className="text-[#00b14f] text-xs font-black uppercase tracking-[0.22em]">Relux Premium Standards</p>
+
                         </div>
                     </motion.div>
 

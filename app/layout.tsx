@@ -189,7 +189,7 @@ export default function RootLayout({
       <body
         suppressHydrationWarning
         className={`min-h-full flex flex-col pt-24 bg-black font-poppins ${poppins.className}`}
-        style={{ fontFamily: '"Poppins", "Poppins Fallback", var(--font-poppins), sans-serif' }}
+        style={{ fontFamily: '"Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}
       >
         {/* JSON-LD Structured Data Schema */}
         <script

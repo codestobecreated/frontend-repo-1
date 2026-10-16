@@ -320,7 +320,7 @@ export default function HomeNewsMarquee() {
                 </div>
                 <div>
                   <h3 className="text-lg sm:text-xl font-bold text-zinc-900 tracking-tight leading-snug">
-                    Latest Articles
+                    Articles
                   </h3>
                   <p className="text-xs sm:text-[13px] text-zinc-500 font-normal leading-normal mt-0.5">
                     Insights, guides and updates to help you understand the EV revolution.

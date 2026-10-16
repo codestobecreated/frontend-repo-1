@@ -37,27 +37,15 @@ function getApiItems<T>(data: unknown): T[] {
   return [];
 }
 
-async function fetchAllApiItems<T>(path: string): Promise<T[]> {
-  const items: T[] = [];
-  let url: string | null = new URL(path, BASE_URL).toString();
-
-  while (url) {
-    const currentUrl = url;
-    const response: Response = await fetch(currentUrl, { cache: "no-store" });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch ${currentUrl}: ${response.status}`);
-    }
-
+async function fetchRecentBlogItems(): Promise<BlogPost[]> {
+  try {
+    const response = await fetch(`${BASE_URL}/api/blogs/`);
+    if (!response.ok) return [];
     const data = await response.json();
-    items.push(...getApiItems<T>(data));
-    url =
-      data && typeof data === "object" && "next" in data && typeof data.next === "string"
-        ? new URL(data.next, BASE_URL).toString()
-        : null;
+    return getApiItems<BlogPost>(data).slice(0, 10);
+  } catch {
+    return [];
   }
-
-  return items;
 }
 
 export default function HomeUpdates() {
@@ -69,7 +57,7 @@ export default function HomeUpdates() {
     let isMounted = true;
     const fetchBlogs = async () => {
       try {
-        const blogs = await fetchAllApiItems<BlogPost>("/api/blogs/");
+        const blogs = await fetchRecentBlogItems();
         if (Array.isArray(blogs) && blogs.length > 0 && isMounted) {
           setBlogPosts(blogs);
         }

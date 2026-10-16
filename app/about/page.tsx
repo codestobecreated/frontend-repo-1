@@ -1,10 +1,16 @@
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
 import AboutUs from "./include/aboutus";
-
 import WhyChooseUs from "./include/whychoose";
-import WhyTxt from "./include/whytxt";
-import AboutDeep from "./include/about-deep";
 import { SITE_URL } from "@/app/ui/baceurl";
+
+const AboutDeep = dynamic(() => import("./include/about-deep"), {
+  loading: () => <div className="min-h-[400px] w-full bg-black" />,
+});
+
+const WhyTxt = dynamic(() => import("./include/whytxt"), {
+  loading: () => <div className="min-h-[250px] w-full bg-black" />,
+});
 
 export const metadata: Metadata = {
   title: "About Relux Electric | India's Leading EV Charging Network",
@@ -83,7 +89,7 @@ export default function About() {
   return (
     <main
       className="flex min-h-screen flex-col bg-black font-poppins"
-      style={{ fontFamily: '"Poppins", "Poppins Fallback", var(--font-poppins), sans-serif' }}
+      style={{ fontFamily: '"Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}
     >
       <script
         type="application/ld+json"

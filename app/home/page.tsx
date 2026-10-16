@@ -1,16 +1,49 @@
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
 import HomeHero from "./include/hero";
-import HomeNewsMarquee from "./include/news-marquee";
-import HomeAbout from "./include/about";
-import SimpleABC from "./include/simple-abc";
-import HomeCTABanner from "./include/cta-banner";
-import HomePartners from "./include/partners";
-import HomeBusiness from "./include/business";
-import HomeCaaS from "./include/caas";
-import HomeUpdates from "./include/updates";
-import HomeAppFeature from "./include/app-feature";
-import HomeContactCTA from "./include/contact-cta";
 import { SITE_URL } from "@/app/ui/baceurl";
+
+// Keep top sections fast and immediately available
+const HomeNewsMarquee = dynamic(() => import("./include/news-marquee"), {
+  loading: () => <div className="min-h-[400px] w-full bg-white" />,
+});
+
+const HomeCaaS = dynamic(() => import("./include/caas"), {
+  loading: () => <div className="min-h-[140px] w-full bg-[#f8f9fa]" />,
+});
+
+// Lazy-load below-the-fold sections to drastically reduce initial bundle size and load time
+const HomeAbout = dynamic(() => import("./include/about"), {
+  loading: () => <div className="min-h-[450px] w-full bg-[#050505]" />,
+});
+
+const HomeCTABanner = dynamic(() => import("./include/cta-banner"), {
+  loading: () => <div className="min-h-[350px] w-full bg-black" />,
+});
+
+const HomePartners = dynamic(() => import("./include/partners"), {
+  loading: () => <div className="min-h-[150px] w-full bg-black" />,
+});
+
+const HomeBusiness = dynamic(() => import("./include/business"), {
+  loading: () => <div className="min-h-[450px] w-full bg-white" />,
+});
+
+const HomeUpdates = dynamic(() => import("./include/updates"), {
+  loading: () => <div className="min-h-[400px] w-full bg-black" />,
+});
+
+const SimpleABC = dynamic(() => import("./include/simple-abc"), {
+  loading: () => <div className="min-h-[300px] w-full bg-white" />,
+});
+
+const HomeAppFeature = dynamic(() => import("./include/app-feature"), {
+  loading: () => <div className="min-h-[350px] w-full bg-[#222222]" />,
+});
+
+const HomeContactCTA = dynamic(() => import("./include/contact-cta"), {
+  loading: () => <div className="min-h-[250px] w-full bg-black" />,
+});
 
 export const metadata: Metadata = {
   alternates: {
@@ -22,7 +55,7 @@ export default function Home() {
   return (
     <div
       className="flex min-h-screen flex-col bg-black font-poppins"
-      style={{ fontFamily: '"Poppins", "Poppins Fallback", var(--font-poppins), sans-serif' }}
+      style={{ fontFamily: '"Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}
     >
       <HomeHero />
       <HomeNewsMarquee />

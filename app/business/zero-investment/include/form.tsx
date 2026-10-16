@@ -106,7 +106,10 @@ export default function ZeroForm() {
   };
 
   return (
-    <section className="relative w-full py-16 md:py-24 bg-black overflow-hidden px-6">
+    <section
+      className="relative w-full py-16 md:py-24 bg-black overflow-hidden px-6 font-poppins"
+      style={{ fontFamily: '"Poppins", "Poppins Fallback", var(--font-poppins), sans-serif' }}
+    >
       <div className="max-w-6xl mx-auto relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
           
@@ -131,7 +134,7 @@ export default function ZeroForm() {
                     <svg className="w-10 h-10" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"></path></svg>
                   </div>
                   <h3 className="text-2xl font-black text-white uppercase tracking-wider">Inquiry Received!</h3>
-                  <p className="text-white/40 text-xs max-w-sm">
+                  <p className="text-white/70 text-[16px] leading-relaxed max-w-sm">
                     Thank you for partnering with Relux Electric. Our investment committee will review your site layout and get in touch within 24 hours.
                   </p>
                   <button 
@@ -331,7 +334,7 @@ export default function ZeroForm() {
                 JOIN THE <br />
                 <span className="text-[#00b14f]">REVOLUTION.</span>
               </h2>
-              <p className="text-white/40 text-xs md:text-sm leading-relaxed max-w-md">
+              <p className="text-white/70 text-[16px] leading-relaxed max-w-md">
                 The EV industry is expanding at an unprecedented rate. Secure your position as a location partner 
                 and capitalize on the rising demand for premium charging infrastructure.
               </p>

@@ -93,12 +93,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Fetch dynamic blog routes from backend API
   try {
     const blogs = await fetchAllApiItems<BlogPost>("/api/blogs/");
-    const blogEntries = blogs.map((blog) => ({
-      url: `${baseUrl}/activity-hub/blogs/${blog.slug || blog.id}`,
-      lastModified: blog.created_at ? new Date(blog.created_at) : new Date(),
-      changeFrequency: "weekly" as const,
-      priority: 0.6,
-    }));
+    const blogEntries = blogs.map((blog) => {
+      const slug = blog.slug && blog.slug.trim()
+        ? blog.slug.trim()
+        : (blog.title
+            ? blog.title
+                .toLowerCase()
+                .trim()
+                .replace(/[^\w\s-]/g, "")
+                .replace(/[\s_-]+/g, "-")
+                .replace(/^-+|-+$/g, "")
+            : blog.id);
+
+      return {
+        url: `${baseUrl}/activity-hub/blogs/${slug}`,
+        lastModified: blog.created_at ? new Date(blog.created_at) : new Date(),
+        changeFrequency: "weekly" as const,
+        priority: 0.6,
+      };
+    });
     sitemapEntries.push(...blogEntries);
   } catch (error) {
     console.error(

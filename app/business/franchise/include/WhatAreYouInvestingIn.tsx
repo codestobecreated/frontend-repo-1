@@ -31,7 +31,10 @@ const investmentItems = [
 
 export default function WhatAreYouInvestingIn() {
   return (
-    <section className="w-full py-16 md:py-24 bg-black text-white font-sans border-t border-white/10 relative overflow-hidden">
+    <section
+      className="w-full py-16 md:py-24 bg-black text-white font-poppins border-t border-white/10 relative overflow-hidden"
+      style={{ fontFamily: '"Poppins", "Poppins Fallback", var(--font-poppins), sans-serif' }}
+    >
       {/* Background ambient light */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-[#00b14f]/5 blur-[140px] rounded-full pointer-events-none" />
 
@@ -50,7 +53,7 @@ export default function WhatAreYouInvestingIn() {
             NOT JUST A <span className="text-[#00b14f]">CHARGER.</span>
           </h2>
 
-          <p className="mt-2 text-white/70 text-sm md:text-base font-medium leading-relaxed max-w-3xl">
+          <p className="mt-2 text-white/70 text-[16px] font-normal leading-relaxed max-w-3xl">
             By choosing Relux, you are supporting the transition towards cleaner transportation while contributing to a growing EV ecosystem across India. Reliable and accessible charging infrastructure makes electric mobility more practical, helping reduce dependence on fossil fuels and our country’s carbon footprint.
             It is an investment in more than infrastructure—it is an investment in cleaner air, healthier communities and a more sustainable future.
           </p>

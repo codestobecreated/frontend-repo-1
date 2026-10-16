@@ -43,7 +43,10 @@ const terms = [
 
 export default function FranchiseTerms() {
   return (
-    <section className="relative w-full py-16 md:py-24 bg-white text-black font-sans overflow-hidden">
+    <section
+      className="relative w-full py-16 md:py-24 bg-white text-black font-poppins overflow-hidden"
+      style={{ fontFamily: '"Poppins", "Poppins Fallback", var(--font-poppins), sans-serif' }}
+    >
 
       <div className="max-w-7xl mx-auto px-[5%] relative z-10">
 
@@ -56,10 +59,10 @@ export default function FranchiseTerms() {
             Franchise Terms &{" "}
             <span className="text-[#00b14f]">Guidelines</span>
           </h2>
-          <p className="text-black/65 text-sm md:text-base leading-relaxed font-medium max-w-2xl">
+          <p className="text-black/65 text-[16px] leading-relaxed font-normal max-w-2xl">
             A Relux franchise may be ideal for landowners, property owners, businesses, and fleet operators. Customer-facing locations such as hotels, restaurants, commercial buildings, or empty land where EV traffic is developing are all excellent locations for a franchise.
           </p>
-          <p className="text-black/50 text-sm leading-relaxed font-medium max-w-2xl">
+          <p className="text-black/50 text-[16px] leading-relaxed font-normal max-w-2xl">
             Here are some things to keep in mind regarding a partnership with us at Relux.
           </p>
         </div>
@@ -83,7 +86,7 @@ export default function FranchiseTerms() {
                   <p className="text-black font-bold text-sm leading-snug">
                     {term.title}
                   </p>
-                  <p className="text-black/55 text-[13px] font-medium leading-relaxed">
+                  <p className="text-black/65 text-[16px] font-normal leading-relaxed">
                     {term.desc}
                   </p>
                 </div>

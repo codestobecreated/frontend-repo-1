@@ -163,7 +163,8 @@ const ZeroModal = ({ isOpen, onClose }: ZeroModalProps) => {
           initial={{ opacity: 0, scale: 0.9, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: 20 }}
-          className="relative w-full max-w-4xl bg-[#080808] border border-white/10 rounded-2xl md:rounded-[2.5rem] overflow-hidden shadow-[0_0_100px_rgba(0,177,79,0.25)] flex flex-col md:flex-row max-h-[90vh] md:max-h-none"
+          className="relative w-full max-w-4xl bg-[#080808] border border-white/10 rounded-2xl md:rounded-[2.5rem] overflow-hidden shadow-[0_0_100px_rgba(0,177,79,0.25)] flex flex-col md:flex-row max-h-[90vh] md:max-h-none font-poppins"
+          style={{ fontFamily: '"Poppins", "Poppins Fallback", var(--font-poppins), sans-serif' }}
         >
           {/* Close Button */}
           <button
@@ -180,14 +181,14 @@ const ZeroModal = ({ isOpen, onClose }: ZeroModalProps) => {
             
             <div className="relative z-10">
               <div className="flex items-center gap-3 mb-8">
-                <span className="w-8 h-px bg-[#00b14f]" />
-                <span className="text-[#00b14f] text-[10px] font-black uppercase tracking-[0.4em]">Inquiry</span>
+                <span className="w-8 h-[2px] bg-[#00b14f]" />
+                <span className="text-[#00b14f] text-xs font-black uppercase tracking-[0.3em] bg-[#00b14f]/10 px-3 py-1 rounded-sm border border-[#00b14f]/30">Inquiry</span>
               </div>
               <h2 className="text-3xl md:text-5xl font-black text-white leading-[0.95] tracking-tighter uppercase mb-6">
                 LOCATION <br />
                 <span className="text-[#00b14f]">PARTNER.</span>
               </h2>
-              <p className="text-white/40 text-[11px] md:text-xs leading-relaxed mb-10 max-w-60">
+              <p className="text-zinc-200 text-sm md:text-base leading-relaxed mb-10 max-w-64 font-normal">
                 The EV industry is expanding at an unprecedented rate. Secure your position as a location partner.
               </p>
 
@@ -197,13 +198,13 @@ const ZeroModal = ({ isOpen, onClose }: ZeroModalProps) => {
                   { icon: FiMail, label: "EMAIL", val: "enquiry@reluxelectric.com" },
                   { icon: FiMapPin, label: "VISIT", val: "CHENNAI, INDIA" }
                 ].map((item) => (
-                  <div key={item.label} className="flex items-center gap-5 p-4 bg-white/5 border border-white/5 hover:border-[#00b14f]/20 transition-all group rounded-2xl">
-                    <div className="w-9 h-9 rounded-xl bg-[#00b14f]/10 flex items-center justify-center text-[#00b14f] group-hover:bg-[#00b14f] group-hover:text-white transition-all shrink-0">
+                  <div key={item.label} className="flex items-center gap-5 p-4 bg-white/[0.07] border border-white/10 hover:border-[#00b14f]/40 transition-all group rounded-2xl">
+                    <div className="w-10 h-10 rounded-xl bg-[#00b14f]/15 flex items-center justify-center text-[#00b14f] group-hover:bg-[#00b14f] group-hover:text-black transition-all shrink-0 border border-[#00b14f]/30">
                       <item.icon className="w-4 h-4" />
                     </div>
                     <div className="min-w-0">
-                      <h4 className="text-white/20 text-[8px] font-black uppercase tracking-[0.2em] mb-0.5">{item.label}</h4>
-                      <p className="text-white text-[10px] font-bold tracking-tight truncate">{item.val}</p>
+                      <h4 className="text-zinc-400 text-[10px] font-black uppercase tracking-wider mb-0.5">{item.label}</h4>
+                      <p className="text-white text-xs md:text-sm font-bold tracking-tight truncate">{item.val}</p>
                     </div>
                   </div>
                 ))}
@@ -260,18 +261,18 @@ const ZeroModal = ({ isOpen, onClose }: ZeroModalProps) => {
                     name="fullName"
                     value={formData.fullName}
                     onChange={handleInputChange}
-                    placeholder="FULL NAME"
+                    placeholder="FULL NAME *"
                     required
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-white text-[10px] font-bold focus:outline-none focus:border-[#00b14f] transition-all placeholder:text-white/20 uppercase tracking-widest"
+                    className="w-full bg-[#141414] border border-white/20 rounded-xl px-5 py-4 text-white text-xs md:text-sm font-semibold focus:outline-none focus:border-[#00b14f] transition-all placeholder:text-zinc-500 uppercase tracking-wider"
                   />
                   <input 
                     type="email" 
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    placeholder="EMAIL ADDRESS"
+                    placeholder="EMAIL ADDRESS *"
                     required
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-white text-[10px] font-bold focus:outline-none focus:border-[#00b14f] transition-all placeholder:text-white/20 tracking-widest"
+                    className="w-full bg-[#141414] border border-white/20 rounded-xl px-5 py-4 text-white text-xs md:text-sm font-semibold focus:outline-none focus:border-[#00b14f] transition-all placeholder:text-zinc-500 tracking-wider"
                   />
                 </div>
 
@@ -281,17 +282,17 @@ const ZeroModal = ({ isOpen, onClose }: ZeroModalProps) => {
                     name="phone"
                     value={formData.phone}
                     onChange={handleInputChange}
-                    placeholder="PHONE NUMBER"
+                    placeholder="PHONE NUMBER *"
                     required
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-white text-[10px] font-bold focus:outline-none focus:border-[#00b14f] transition-all placeholder:text-white/20 uppercase tracking-widest"
+                    className="w-full bg-[#141414] border border-white/20 rounded-xl px-5 py-4 text-white text-xs md:text-sm font-semibold focus:outline-none focus:border-[#00b14f] transition-all placeholder:text-zinc-500 uppercase tracking-wider"
                   />
                   <input 
                     type="text" 
                     name="address"
                     value={formData.address}
                     onChange={handleInputChange}
-                    placeholder="ADDRESS"
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-white text-[10px] font-bold focus:outline-none focus:border-[#00b14f] transition-all placeholder:text-white/20 uppercase tracking-widest"
+                    placeholder="PROPERTY ADDRESS"
+                    className="w-full bg-[#141414] border border-white/20 rounded-xl px-5 py-4 text-white text-xs md:text-sm font-semibold focus:outline-none focus:border-[#00b14f] transition-all placeholder:text-zinc-500 uppercase tracking-wider"
                   />
                 </div>
 
@@ -300,11 +301,11 @@ const ZeroModal = ({ isOpen, onClose }: ZeroModalProps) => {
                     name="state"
                     value={formData.state}
                     onChange={handleInputChange}
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-white text-[10px] font-bold uppercase tracking-widest focus:outline-none focus:border-[#00b14f] appearance-none cursor-pointer"
+                    className="w-full bg-[#141414] border border-white/20 rounded-xl px-5 py-4 text-white text-xs md:text-sm font-semibold uppercase tracking-wider focus:outline-none focus:border-[#00b14f] appearance-none cursor-pointer"
                   >
-                    <option className="bg-black text-white" value="SELECT STATE">SELECT STATE</option>
+                    <option className="bg-[#141414] text-white" value="SELECT STATE">SELECT STATE</option>
                     {states.map((s) => (
-                      <option key={s} className="bg-black text-white" value={s}>{s.toUpperCase()}</option>
+                      <option key={s} className="bg-[#141414] text-white" value={s}>{s.toUpperCase()}</option>
                     ))}
                   </select>
                   <select 
@@ -312,11 +313,11 @@ const ZeroModal = ({ isOpen, onClose }: ZeroModalProps) => {
                     value={formData.city}
                     onChange={handleInputChange}
                     disabled={formData.state === "SELECT STATE"}
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-white text-[10px] font-bold uppercase tracking-widest focus:outline-none focus:border-[#00b14f] appearance-none cursor-pointer disabled:opacity-40"
+                    className="w-full bg-[#141414] border border-white/20 rounded-xl px-5 py-4 text-white text-xs md:text-sm font-semibold uppercase tracking-wider focus:outline-none focus:border-[#00b14f] appearance-none cursor-pointer disabled:opacity-40"
                   >
-                    <option className="bg-black text-white" value="SELECT CITY">SELECT CITY</option>
+                    <option className="bg-[#141414] text-white" value="SELECT CITY">SELECT CITY</option>
                     {currentCities.map((c) => (
-                      <option key={c} className="bg-black text-white" value={c}>{c.toUpperCase()}</option>
+                      <option key={c} className="bg-[#141414] text-white" value={c}>{c.toUpperCase()}</option>
                     ))}
                   </select>
                 </div>
@@ -328,21 +329,21 @@ const ZeroModal = ({ isOpen, onClose }: ZeroModalProps) => {
                     value={formData.landSize}
                     onChange={handleInputChange}
                     placeholder="LAND SIZE"
-                    className="bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-white text-[10px] font-bold focus:outline-none focus:border-[#00b14f] transition-all placeholder:text-white/20 uppercase tracking-widest"
+                    className="bg-[#141414] border border-white/20 rounded-xl px-5 py-4 text-white text-xs md:text-sm font-semibold focus:outline-none focus:border-[#00b14f] transition-all placeholder:text-zinc-500 uppercase tracking-wider"
                   />
                   <select 
                     name="landUnit"
                     value={formData.landUnit}
                     onChange={handleInputChange}
-                    className="bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-white text-[10px] font-bold uppercase tracking-widest focus:outline-none focus:border-[#00b14f] appearance-none cursor-pointer"
+                    className="bg-[#141414] border border-white/20 rounded-xl px-5 py-4 text-white text-xs md:text-sm font-semibold uppercase tracking-wider focus:outline-none focus:border-[#00b14f] appearance-none cursor-pointer"
                   >
-                    <option className="bg-black text-white" value="SQ.FT">SQ.FT</option>
-                    <option className="bg-black text-white" value="ACRES">ACRES</option>
+                    <option className="bg-[#141414] text-white" value="SQ.FT">SQ.FT</option>
+                    <option className="bg-[#141414] text-white" value="ACRES">ACRES</option>
                   </select>
                 </div>
 
-                <div className="flex items-center justify-between py-3 px-1 border-y border-white/5">
-                  <span className="text-[9px] text-white/30 uppercase font-black tracking-widest">Electricity Connection</span>
+                <div className="flex items-center justify-between py-3.5 px-3 rounded-xl bg-white/[0.04] border border-white/10">
+                  <span className="text-xs text-zinc-300 uppercase font-black tracking-wider">Electricity Connection</span>
                   <div className="flex items-center gap-6">
                     <label className="flex items-center gap-2 cursor-pointer group">
                       <input 
@@ -351,9 +352,9 @@ const ZeroModal = ({ isOpen, onClose }: ZeroModalProps) => {
                         value="YES"
                         checked={formData.electricity === "YES"}
                         onChange={handleInputChange}
-                        className="accent-[#00b14f] w-3.5 h-3.5" 
+                        className="accent-[#00b14f] w-4 h-4 cursor-pointer" 
                       />
-                      <span className="text-white/60 text-[9px] font-bold uppercase tracking-widest group-hover:text-[#00b14f] transition-colors">Yes</span>
+                      <span className="text-white text-xs font-bold uppercase tracking-wider group-hover:text-[#00b14f] transition-colors">Yes</span>
                     </label>
                     <label className="flex items-center gap-2 cursor-pointer group">
                       <input 
@@ -362,9 +363,9 @@ const ZeroModal = ({ isOpen, onClose }: ZeroModalProps) => {
                         value="NO"
                         checked={formData.electricity === "NO"}
                         onChange={handleInputChange}
-                        className="accent-[#00b14f] w-3.5 h-3.5" 
+                        className="accent-[#00b14f] w-4 h-4 cursor-pointer" 
                       />
-                      <span className="text-white/60 text-[9px] font-bold uppercase tracking-widest group-hover:text-[#00b14f] transition-colors">No</span>
+                      <span className="text-white text-xs font-bold uppercase tracking-wider group-hover:text-[#00b14f] transition-colors">No</span>
                     </label>
                   </div>
                 </div>
@@ -373,9 +374,9 @@ const ZeroModal = ({ isOpen, onClose }: ZeroModalProps) => {
                   name="message"
                   value={formData.message}
                   onChange={handleInputChange}
-                  placeholder="ADDITIONAL MESSAGE"
+                  placeholder="ADDITIONAL MESSAGE (OPTIONAL)"
                   rows={2}
-                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-white text-[10px] font-bold focus:outline-none focus:border-[#00b14f] transition-all placeholder:text-white/20 resize-none uppercase tracking-widest"
+                  className="w-full bg-[#141414] border border-white/20 rounded-xl px-5 py-4 text-white text-xs md:text-sm font-semibold focus:outline-none focus:border-[#00b14f] transition-all placeholder:text-zinc-500 resize-none uppercase tracking-wider"
                 ></textarea>
 
                 <div className="relative group">
@@ -385,9 +386,9 @@ const ZeroModal = ({ isOpen, onClose }: ZeroModalProps) => {
                     accept="image/*"
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" 
                   />
-                  <div className="w-full bg-white/5 border border-dashed border-white/10 rounded-2xl px-5 py-4 flex items-center justify-center gap-3 group-hover:border-[#00b14f]/50 transition-all">
+                  <div className="w-full bg-[#141414] border border-dashed border-white/20 rounded-xl px-5 py-4 flex items-center justify-center gap-3 group-hover:border-[#00b14f] transition-all cursor-pointer">
                     <FiUpload className="text-[#00b14f] w-4 h-4" />
-                    <span className="text-white/30 font-black text-[9px] uppercase tracking-widest">
+                    <span className="text-zinc-200 font-bold text-xs uppercase tracking-wider">
                       {file ? file.name : "Upload Land Photo (Optional)"}
                     </span>
                   </div>
@@ -396,21 +397,21 @@ const ZeroModal = ({ isOpen, onClose }: ZeroModalProps) => {
                 <button 
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-[#00b14f] hover:bg-white hover:text-black text-white font-black py-4.5 rounded-none transition-all duration-300 shadow-xl shadow-[#00b14f]/20 flex items-center justify-center gap-3 text-[10px] uppercase tracking-[0.2em] group disabled:opacity-50"
+                  className="w-full bg-[#00b14f] hover:bg-white hover:text-black text-white font-black py-4.5 rounded-sm transition-all duration-300 shadow-xl shadow-[#00b14f]/30 flex items-center justify-center gap-3 text-xs md:text-sm uppercase tracking-[0.2em] group disabled:opacity-50 cursor-pointer"
                 >
                   <span>{loading ? "SUBMITTING..." : "Submit Inquiry"}</span>
-                  <FiSend className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                  <FiSend className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </button>
 
                 {/* Mobile Contact Info */}
-                <div className="md:hidden grid grid-cols-2 gap-4 py-4 border-t border-white/5 mt-6">
+                <div className="md:hidden grid grid-cols-2 gap-4 py-4 border-t border-white/10 mt-6">
                     <div className="flex items-center gap-2">
-                        <FiPhone className="text-[#00b14f] w-3 h-3" />
-                        <span className="text-white/40 text-[8px] font-bold">+91 98848 66993</span>
+                        <FiPhone className="text-[#00b14f] w-3.5 h-3.5" />
+                        <span className="text-zinc-300 text-[10px] font-bold">+91 98848 66993</span>
                     </div>
                     <div className="flex items-center gap-2">
-                        <FiMail className="text-[#00b14f] w-3 h-3" />
-                        <span className="text-white/40 text-[8px] font-bold">enquiry@reluxelectric.com</span>
+                        <FiMail className="text-[#00b14f] w-3.5 h-3.5" />
+                        <span className="text-zinc-300 text-[10px] font-bold">enquiry@reluxelectric.com</span>
                     </div>
                 </div>
               </form>

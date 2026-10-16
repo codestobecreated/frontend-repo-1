@@ -36,9 +36,13 @@ import {
   RotateCcw,
   Edit3,
   Eye,
-  EyeOff
+  EyeOff,
+  Compass,
+  Shield,
+  Globe
 } from "lucide-react";
 import { BASE_URL } from "@/app/ui/baceurl";
+import { ZONES, NORTH_ZONE_STATES, CITIES } from "@/app/ui/states-cities";
 
 interface Toast {
   id: string;
@@ -63,6 +67,12 @@ export default function AdminPanel() {
   const [assignedFilter, setAssignedFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [adminZone, setAdminZone] = useState<string>("all");
+  const [adminStates, setAdminStates] = useState<string[]>([]);
+  const [adminUsername, setAdminUsername] = useState<string>("");
+  const [showTerritoryModal, setShowTerritoryModal] = useState(false);
+  const [showExportMenu, setShowExportMenu] = useState(false);
+  const [activeTerritoryState, setActiveTerritoryState] = useState("Delhi");
 
   // Agent Management Modal & States
   const [showAgentModal, setShowAgentModal] = useState(false);
@@ -120,6 +130,20 @@ export default function AdminPanel() {
       setAuthToken(savedToken);
       setIsAuthenticated(true);
     }
+    const savedUser = localStorage.getItem("relux_admin_username");
+    if (savedUser) {
+      setAdminUsername(savedUser);
+    }
+    const savedZone = localStorage.getItem("relux_admin_zone");
+    if (savedZone) {
+      setAdminZone(savedZone);
+    }
+    const savedStates = localStorage.getItem("relux_admin_states");
+    if (savedStates) {
+      try {
+        setAdminStates(JSON.parse(savedStates));
+      } catch (e) {}
+    }
     const savedRemoved = localStorage.getItem("relux_removed_agents");
     if (savedRemoved) {
       try {
@@ -164,13 +188,20 @@ export default function AdminPanel() {
       const data = await res.json();
 
       if (res.ok && data.success) {
-        const token = data.token || "relux@admin2025";
+        const uName = data.manager?.username || u;
         localStorage.setItem("relux_admin_token", token);
-        localStorage.setItem("relux_admin_username", data.manager?.username || u);
+        localStorage.setItem("relux_admin_username", uName);
         localStorage.setItem("relux_admin_role", data.manager?.role || "manager");
+        setAdminUsername(uName);
+        const z = data.manager?.assigned_zone || "all";
+        const st = data.manager?.assigned_states || [];
+        localStorage.setItem("relux_admin_zone", z);
+        localStorage.setItem("relux_admin_states", JSON.stringify(st));
+        setAdminZone(z);
+        setAdminStates(st);
         setAuthToken(token);
         setIsAuthenticated(true);
-        showToast(`Access Granted. Welcome ${data.manager?.full_name || u} to Relux Manager Panel.`, "success");
+        showToast(`Access Granted. Welcome ${data.manager?.full_name || u} to Relux Manager Panel${z && z !== 'all' ? ` (${z.toUpperCase()} ZONE)` : ''}.`, "success");
         return;
       } else {
         // Fallback for master hardcoded credentials
@@ -178,6 +209,9 @@ export default function AdminPanel() {
           const token = "relux@admin2025";
           localStorage.setItem("relux_admin_token", token);
           localStorage.setItem("relux_admin_username", u);
+          localStorage.setItem("relux_admin_zone", "all");
+          setAdminUsername(u);
+          setAdminZone("all");
           setAuthToken(token);
           setIsAuthenticated(true);
           showToast("Access Granted. Welcome Manager to Relux Admin Panel.", "success");
@@ -193,6 +227,8 @@ export default function AdminPanel() {
         const token = "relux@admin2025";
         localStorage.setItem("relux_admin_token", token);
         localStorage.setItem("relux_admin_username", u);
+        localStorage.setItem("relux_admin_zone", "all");
+        setAdminZone("all");
         setAuthToken(token);
         setIsAuthenticated(true);
         showToast("Access Granted (Offline).", "success");
@@ -208,6 +244,11 @@ export default function AdminPanel() {
   const handleLogout = () => {
     localStorage.removeItem("relux_admin_token");
     localStorage.removeItem("relux_admin_username");
+    localStorage.removeItem("relux_admin_role");
+    localStorage.removeItem("relux_admin_zone");
+    localStorage.removeItem("relux_admin_states");
+    setAdminZone("all");
+    setAdminStates([]);
     setAuthToken("");
     setIsAuthenticated(false);
     setUsernameInput("");
@@ -238,6 +279,7 @@ export default function AdminPanel() {
       const response = await fetch(url, {
         headers: {
           "X-Admin-Token": authToken,
+          "X-User-Name": localStorage.getItem("relux_admin_username") || "Manager Admin",
           "Content-Type": "application/json",
         },
       });
@@ -266,6 +308,7 @@ export default function AdminPanel() {
       const response = await fetch(`${BASE_URL}/api/admin/stats/`, {
         headers: {
           "X-Admin-Token": authToken,
+          "X-User-Name": localStorage.getItem("relux_admin_username") || "Manager Admin",
           "Content-Type": "application/json",
         },
       });
@@ -418,7 +461,7 @@ export default function AdminPanel() {
         method: "PATCH",
         headers: {
           "X-Admin-Token": authToken,
-          "X-User-Name": "Manager Admin",
+          "X-User-Name": localStorage.getItem("relux_admin_username") || "Manager Admin",
           "Content-Type": "application/json",
         },
         body: JSON.stringify(payload),
@@ -745,7 +788,7 @@ export default function AdminPanel() {
   }
 
   return (
-    <div className="-mt-24 min-h-screen bg-slate-950 text-slate-100 font-sans pb-16">
+    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans pb-16">
       {/* Toast Notification Container */}
       <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-2">
         {toasts.map((toast) => (
@@ -768,70 +811,145 @@ export default function AdminPanel() {
       </div>
 
       {/* Top Header Navbar */}
-      <header className="border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex items-center justify-center text-emerald-400">
+      <header className="border-b border-slate-800/80 bg-slate-900/95 backdrop-blur-xl sticky top-0 z-40 shadow-xl shadow-black/40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          
+          {/* Left Side: Brand, Identity & Territory */}
+          <div className="flex items-center gap-3.5">
+            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-lg shadow-emerald-500/10 shrink-0">
               <BarChart3 className="w-5 h-5" />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-xl font-bold text-white tracking-tight">Manager Admin Panel</h1>
-                <span className="px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full">
-                  Manager Mode
+
+            <div className="space-y-1">
+              {/* Title & Status Badges */}
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+                  Manager Admin Panel
+                </h1>
+                
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-emerald-500/15 border border-emerald-500/30 text-emerald-300">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  Manager Active
                 </span>
+
+                {adminZone && adminZone !== "all" && (
+                  <button
+                    type="button"
+                    onClick={() => setShowTerritoryModal(true)}
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-extrabold tracking-wide bg-gradient-to-r from-blue-500/20 to-indigo-500/20 hover:from-blue-500/30 hover:to-indigo-500/30 border border-blue-500/40 text-blue-300 shadow-sm transition-all cursor-pointer group"
+                    title="Click to view assigned states & cities"
+                  >
+                    <Compass className="w-3.5 h-3.5 text-blue-400 group-hover:rotate-45 transition-transform" />
+                    <span>{adminZone === "north" ? "North Zone Manager (10 States & UTs)" : `${adminZone.toUpperCase()} Territory`}</span>
+                    <span className="text-[10px] text-blue-400/80 font-normal underline ml-0.5">View Coverage</span>
+                  </button>
+                )}
               </div>
-              <p className="text-xs text-slate-400">Enquiry Operations & Database Agent User Creation</p>
+
+              {/* Subtitle with Context & Geographic Scope */}
+              <div className="flex items-center gap-2 text-xs text-slate-400 flex-wrap">
+                <span className="text-slate-300 font-medium">
+                  Logged in as <strong className="text-white font-bold">@{adminUsername || "manager"}</strong>
+                </span>
+                <span className="text-slate-600">•</span>
+                {adminZone === "north" ? (
+                  <span className="text-slate-400 flex items-center gap-1.5">
+                    <MapPin className="w-3 h-3 text-emerald-400 shrink-0" />
+                    Delhi, Punjab, Haryana, UP, HP, J&K, Ladakh, Chandigarh, Uttarakhand, Rajasthan
+                  </span>
+                ) : (
+                  <span>National Territory Access</span>
+                )}
+              </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          {/* Right Side: Actions Toolbar */}
+          <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap w-full md:w-auto justify-end">
+            
+            {/* Create & Manage Agents */}
             <button
               id="manage-agents-btn"
               onClick={() => { setShowAgentModal(true); fetchDbAgents(); }}
-              className="px-4 py-2.5 bg-blue-600/10 hover:bg-blue-600/20 border border-blue-500/30 text-blue-400 rounded-xl text-xs font-semibold flex items-center gap-2 transition-colors"
+              className="px-3.5 py-2.5 bg-blue-600/15 hover:bg-blue-600/25 border border-blue-500/30 text-blue-300 hover:text-white rounded-xl text-xs font-bold flex items-center gap-2 transition-all shadow-sm active:scale-95"
             >
-              <UserPlus className="w-4 h-4" />
-              <span>Create & Manage Agents ({dbAgentsList.length})</span>
+              <UserPlus className="w-4 h-4 text-blue-400" />
+              <span>Agents ({dbAgentsList.length})</span>
             </button>
 
+            {/* Refresh */}
             <button
               id="refresh-stats-btn"
               onClick={() => { fetchEnquiries(); fetchStats(); fetchDbAgents(); }}
-              className="p-2.5 bg-slate-800/80 hover:bg-slate-800 text-slate-300 rounded-xl border border-slate-700 transition-colors"
-              title="Refresh Data"
+              className="p-2.5 bg-slate-800/80 hover:bg-slate-700/80 text-slate-300 hover:text-white rounded-xl border border-slate-700/60 transition-all active:scale-95"
+              title="Refresh Pipeline & Stats"
             >
-              <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
+              <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin text-emerald-400" : ""}`} />
             </button>
 
-            <button
-              id="download-csv-btn"
-              onClick={() => handleDownloadCSV(false)}
-              className="px-3.5 py-2.5 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 rounded-xl text-xs font-semibold flex items-center gap-2 transition-colors"
-              title="Download CSV for currently active tab & filters"
-            >
-              <Download className="w-4 h-4" />
-              <span>Export {activeTab === 'franchise' ? 'Franchise' : activeTab === 'zero_investment' ? 'Zero-Inv' : 'Contact'} CSV</span>
-            </button>
+            {/* Export Dropdown */}
+            <div className="relative">
+              <button
+                id="export-dropdown-btn"
+                type="button"
+                onClick={() => setShowExportMenu(!showExportMenu)}
+                className="px-3.5 py-2.5 bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 hover:text-white rounded-xl text-xs font-bold flex items-center gap-2 transition-all shadow-sm active:scale-95"
+              >
+                <Download className="w-4 h-4 text-emerald-400" />
+                <span>Export CSV</span>
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showExportMenu ? "rotate-180" : ""}`} />
+              </button>
 
-            <button
-              id="download-all-csv-btn"
-              onClick={() => handleDownloadCSV(true)}
-              className="px-3.5 py-2.5 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 text-purple-300 rounded-xl text-xs font-semibold flex items-center gap-2 transition-colors"
-              title="Download Master CSV containing all 3 pipelines (Franchise, Zero-Inv, Contact) with filters"
-            >
-              <Download className="w-4 h-4" />
-              <span>Export All Master CSV</span>
-            </button>
+              {showExportMenu && (
+                <div 
+                  className="absolute right-0 mt-2 w-64 bg-slate-900 border border-slate-700/90 rounded-2xl shadow-2xl p-2 z-50 animate-in fade-in zoom-in-95 duration-150 space-y-1"
+                >
+                  <div className="px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 border-b border-slate-800">
+                    Export Enquiries
+                  </div>
+                  
+                  <button
+                    type="button"
+                    onClick={() => { setShowExportMenu(false); handleDownloadCSV(false); }}
+                    className="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:bg-emerald-500/20 hover:text-emerald-300 transition-colors flex items-center justify-between"
+                  >
+                    <span>Current Pipeline ({activeTab === 'franchise' ? 'Franchise' : activeTab === 'zero_investment' ? 'Zero-Inv' : 'Contact'})</span>
+                    <Download className="w-3.5 h-3.5 opacity-60" />
+                  </button>
 
+                  <button
+                    type="button"
+                    onClick={() => { setShowExportMenu(false); handleDownloadCSV(true); }}
+                    className="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:bg-purple-500/20 hover:text-purple-300 transition-colors flex items-center justify-between"
+                  >
+                    <span>Master CSV (All Pipelines)</span>
+                    <Download className="w-3.5 h-3.5 opacity-60" />
+                  </button>
+
+                  {selectedIds.size > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => { setShowExportMenu(false); handleExportSelectedCSV(); }}
+                      className="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-amber-300 hover:bg-amber-500/20 transition-colors flex items-center justify-between border-t border-slate-800/80 pt-2"
+                    >
+                      <span>Export {selectedIds.size} Selected Leads</span>
+                      <Download className="w-3.5 h-3.5 opacity-60" />
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Logout */}
             <button
               id="manager-logout-btn"
               onClick={handleLogout}
-              className="p-2.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-xl border border-rose-500/20 transition-colors"
-              title="Logout"
+              className="p-2.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 hover:text-rose-300 rounded-xl border border-rose-500/25 transition-all active:scale-95"
+              title="Logout from Manager Panel"
             >
               <LogOut className="w-4 h-4" />
             </button>
+
           </div>
         </div>
       </header>
@@ -1053,6 +1171,110 @@ export default function AdminPanel() {
                 </table>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Territory Jurisdiction Breakdown Modal */}
+      {showTerritoryModal && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-150">
+          <div className="bg-slate-900 border border-slate-700/80 w-full max-w-2xl rounded-3xl p-6 shadow-2xl space-y-5 relative max-h-[90vh] overflow-y-auto">
+            
+            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-2xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400">
+                  <Compass className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-white text-lg flex items-center gap-2">
+                    <span>{adminZone === "north" ? "North Zone Territory Coverage" : `${adminZone.toUpperCase()} Territory`}</span>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                      Active Jurisdiction
+                    </span>
+                  </h3>
+                  <p className="text-xs text-slate-400">
+                    Strict territorial data boundary: Leads, states &amp; cities exclusively assigned to @{adminUsername || "manager"}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowTerritoryModal(false)}
+                className="p-2 text-slate-400 hover:text-white rounded-xl bg-slate-800/60 hover:bg-slate-800 transition-colors"
+                title="Close"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Territory Explanation Notice */}
+            <div className="p-4 rounded-2xl bg-blue-500/10 border border-blue-500/25 flex items-start gap-3 text-xs text-blue-200">
+              <Shield className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
+              <p>
+                As a Regional Manager, all incoming pipeline leads, inquiries, attendance timestamps, and statistics shown in this panel are automatically filtered to your assigned territory. You have full access to these 10 States &amp; 68+ cities.
+              </p>
+            </div>
+
+            {/* State Selection Chips */}
+            <div className="space-y-2">
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                <MapPin className="w-3.5 h-3.5 text-emerald-400" />
+                Assigned States &amp; Union Territories (10)
+              </label>
+              <div className="flex flex-wrap gap-2">
+                {NORTH_ZONE_STATES.map((st) => {
+                  const isSelected = activeTerritoryState === st;
+                  const count = (CITIES[st] || []).length;
+                  return (
+                    <button
+                      key={st}
+                      type="button"
+                      onClick={() => setActiveTerritoryState(st)}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border ${
+                        isSelected
+                          ? "bg-emerald-500/20 border-emerald-500 text-emerald-300 shadow-sm"
+                          : "bg-slate-950 border-slate-800 text-slate-300 hover:border-slate-700"
+                      }`}
+                    >
+                      {st} <span className="text-[10px] opacity-70">({count} cities)</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Active State Cities Breakdown */}
+            {activeTerritoryState && (
+              <div className="bg-slate-950/80 rounded-2xl p-4 border border-slate-800 space-y-2">
+                <div className="flex items-center justify-between text-xs font-semibold text-slate-300">
+                  <span className="text-emerald-400 font-bold">
+                    Assigned Cities in {activeTerritoryState} ({(CITIES[activeTerritoryState] || []).length}):
+                  </span>
+                  <span className="text-[10px] text-slate-500">Auto-routed leads to your panel</span>
+                </div>
+                <div className="flex flex-wrap gap-1.5 max-h-40 overflow-y-auto pr-1">
+                  {(CITIES[activeTerritoryState] || []).map((city) => (
+                    <span
+                      key={city}
+                      className="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 text-[11px]"
+                    >
+                      {city}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="pt-2 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setShowTerritoryModal(false)}
+                className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-750 text-white text-xs font-bold border border-slate-700 transition-colors"
+              >
+                Close View
+              </button>
+            </div>
+
           </div>
         </div>
       )}

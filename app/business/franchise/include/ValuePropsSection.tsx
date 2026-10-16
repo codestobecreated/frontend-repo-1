@@ -88,12 +88,13 @@ export default function ValuePropsSection() {
 
   return (
     <section
-      className="relative w-full py-20 md:py-28 text-slate-900 font-sans border-b border-slate-200 overflow-hidden"
+      className="relative w-full py-20 md:py-28 text-slate-900 font-poppins border-b border-slate-200 overflow-hidden"
       style={{
         backgroundImage: "url('/franchise/image.png')",
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
+        fontFamily: '"Poppins", "Poppins Fallback", var(--font-poppins), sans-serif',
       }}
     >
       {/* Light background overlay for optimal readability */}
@@ -112,7 +113,7 @@ export default function ValuePropsSection() {
             <span className="text-[#00b14f]">EV CHARGING BUSINESS</span>
           </h2>
 
-          <p className="text-slate-600 text-sm md:text-base leading-relaxed font-medium max-w-4xl">
+          <p className="text-slate-600 text-[16px] leading-relaxed font-normal max-w-4xl">
             Relux provides a complete franchise ecosystem covering infrastructure, technology, customer support,
             marketing, and business assistance helping franchise partners establish and manage their EV charging operations
             with greater confidence.

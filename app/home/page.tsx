@@ -20,7 +20,10 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen flex-col bg-black">
+    <div
+      className="flex min-h-screen flex-col bg-black font-poppins"
+      style={{ fontFamily: '"Poppins", "Poppins Fallback", var(--font-poppins), sans-serif' }}
+    >
       <HomeHero />
       <HomeNewsMarquee />
       <HomeCaaS />

@@ -118,7 +118,10 @@ export default async function LocationsPage({ params }: Props) {
   }
 
   return (
-    <main className="fixed inset-0 top-0 bg-[#0a0a0a] overflow-hidden z-10">
+    <main
+      className="fixed inset-0 top-0 bg-[#0a0a0a] overflow-hidden z-10 font-poppins"
+      style={{ fontFamily: '"Poppins", "Poppins Fallback", var(--font-poppins), sans-serif' }}
+    >
       <LocationMap />
     </main>
   );

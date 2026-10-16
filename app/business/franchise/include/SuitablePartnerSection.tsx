@@ -32,7 +32,10 @@ const suitableForList = [
 
 export default function SuitablePartnerSection() {
   return (
-    <section className="relative w-full py-16 md:py-24 bg-gradient-to-b from-white via-[#f4faf6] to-white text-slate-900 font-sans border-b border-emerald-100/80 overflow-hidden">
+    <section
+      className="relative w-full py-16 md:py-24 bg-gradient-to-b from-white via-[#f4faf6] to-white text-slate-900 font-poppins border-b border-emerald-100/80 overflow-hidden"
+      style={{ fontFamily: '"Poppins", "Poppins Fallback", var(--font-poppins), sans-serif' }}
+    >
       
       {/* Subtle background pattern */}
       <div className="absolute inset-0 bg-[radial-gradient(#00b14f_1px,transparent_1px)] [background-size:32px_32px] opacity-10 pointer-events-none" />
@@ -77,7 +80,7 @@ export default function SuitablePartnerSection() {
                   </h3>
 
                   {/* Description */}
-                  <p className="text-slate-600 text-sm leading-relaxed font-medium">
+                  <p className="text-slate-600 text-[16px] leading-relaxed font-normal">
                     {item.desc}
                   </p>
                 </div>

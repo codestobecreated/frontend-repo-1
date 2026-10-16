@@ -85,7 +85,10 @@ function SectionLabel({ label }: { label: string }) {
 
 export default function AboutDeep() {
   return (
-    <section className="relative w-full bg-black overflow-hidden">
+    <section
+      className="relative w-full bg-black overflow-hidden font-poppins"
+      style={{ fontFamily: '"Poppins", "Poppins Fallback", var(--font-poppins), sans-serif' }}
+    >
 
       {/* ══════════════════════════════════════════════
           2. Our Story
@@ -115,11 +118,11 @@ export default function AboutDeep() {
               {/* Vertical Glowing Line Indicator */}
               <div className="w-1 bg-gradient-to-b from-[#00b14f] via-[#00b14f]/50 to-transparent shrink-0 rounded-full my-1" />
 
-              <div className="space-y-6 text-white/80 text-base md:text-lg leading-relaxed font-normal">
-                <p className="text-white font-medium text-lg md:text-xl leading-relaxed">
+              <div className="space-y-6 text-zinc-200 text-base md:text-[17px] leading-relaxed font-normal">
+                <p className="text-white font-semibold text-base md:text-[17px] leading-relaxed">
                   Relux began operations in 2009 and entered the EV charging space in 2012, when India&apos;s charging infrastructure was still taking shape.
                 </p>
-                <p className="text-white/70">
+                <p className="text-zinc-200 text-base md:text-[17px] leading-relaxed font-normal">
                   We learned the business on the ground—from equipment and electrical infrastructure to site requirements, vehicles and the realities of keeping a station running. More than a decade later, that experience continues to shape how we design, build and support charging infrastructure.
                 </p>
               </div>
@@ -457,7 +460,7 @@ export default function AboutDeep() {
                         {proj.title}
                       </h3>
                     </div>
-                    <p className="text-white/70 text-xs md:text-sm font-medium leading-relaxed">
+                    <p className="text-zinc-200 text-base font-normal leading-relaxed">
                       {proj.desc}
                     </p>
                   </div>

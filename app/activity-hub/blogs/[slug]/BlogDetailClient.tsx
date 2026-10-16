@@ -50,25 +50,83 @@ export default function BlogDetailClient({ params }: { params: Promise<{ slug: s
   const [bookmarked, setBookmarked] = useState(false);
 
   useEffect(() => {
+    let isMounted = true;
     const fetchPost = async () => {
       try {
-        const res = await fetch(`${BASE_URL}/api/blogs/${encodeURIComponent(slug)}/`, {
-          cache: "no-store",
-        });
-        if (res.ok) {
-          const text = await res.text();
-          if (text && text.trim().length > 0) {
-            const data = JSON.parse(text);
-            setPost(data);
+        setLoading(true);
+        const cleanSlug = decodeURIComponent(slug).trim();
+
+        // 1. Try direct fetch by slug or ID
+        try {
+          const res = await fetch(`${BASE_URL}/api/blogs/${encodeURIComponent(cleanSlug)}/`, {
+            cache: "no-store",
+          });
+          if (res.ok) {
+            const text = await res.text();
+            if (text && text.trim().length > 0) {
+              const data = JSON.parse(text);
+              if (data && data.title && isMounted) {
+                setPost(data);
+                return;
+              }
+            }
           }
+        } catch {
+          // Fall through to list lookup
+        }
+
+        // 2. Fallback: Search all blogs from backend API by slug, title, or ID
+        try {
+          const listRes = await fetch(`${BASE_URL}/api/blogs/`, { cache: "no-store" });
+          if (listRes.ok) {
+            const listData = await listRes.json();
+            const list = Array.isArray(listData) ? listData : listData.results || [];
+            
+            const normalize = (str: string) =>
+              str.toLowerCase().replace(/[^\w\s-]/g, "").replace(/[\s_-]+/g, "-").replace(/^-+|-+$/g, "");
+
+            const targetNorm = normalize(cleanSlug);
+
+            const matched = list.find((b: any) => {
+              if (String(b.id) === cleanSlug) return true;
+              if (b.slug && (b.slug === cleanSlug || normalize(b.slug) === targetNorm)) return true;
+              if (b.title && (normalize(b.title) === targetNorm || b.title.toLowerCase().trim() === cleanSlug.toLowerCase())) return true;
+              return false;
+            });
+
+            if (matched && isMounted) {
+              // Try fetching full detail using matched.slug if available
+              if (matched.slug) {
+                try {
+                  const detailRes = await fetch(`${BASE_URL}/api/blogs/${encodeURIComponent(matched.slug)}/`, { cache: "no-store" });
+                  if (detailRes.ok) {
+                    const detailData = await detailRes.json();
+                    if (detailData && detailData.title && isMounted) {
+                      setPost(detailData);
+                      return;
+                    }
+                  }
+                } catch {
+                  // Use matched item directly
+                }
+              }
+              setPost(matched);
+              return;
+            }
+          }
+        } catch {
+          // Backend offline
         }
       } catch (err) {
         console.error("Failed to fetch blog post:", err);
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
     fetchPost();
+    return () => {
+      isMounted = false;
+    };
   }, [slug]);
 
   const formatDate = (dateString: string) => {

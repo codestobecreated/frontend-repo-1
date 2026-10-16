@@ -137,10 +137,13 @@ export default function LocationDetailClient() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center pt-20">
+      <div
+        className="min-h-screen bg-black text-white flex items-center justify-center pt-20 font-poppins"
+        style={{ fontFamily: '"Poppins", "Poppins Fallback", var(--font-poppins), sans-serif' }}
+      >
         <div className="flex flex-col items-center gap-4">
           <div className="w-12 h-12 border-4 border-[#00b14f] border-t-transparent rounded-full animate-spin" />
-          <p className="text-sm font-bold uppercase tracking-widest text-white/50">Loading Station Details...</p>
+          <p className="text-[16px] font-bold uppercase tracking-widest text-white/50">Loading Station Details...</p>
         </div>
       </div>
     );
@@ -148,9 +151,12 @@ export default function LocationDetailClient() {
 
   if (!station) {
     return (
-      <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center pt-20 px-6">
+      <div
+        className="min-h-screen bg-black text-white flex flex-col items-center justify-center pt-20 px-6 font-poppins"
+        style={{ fontFamily: '"Poppins", "Poppins Fallback", var(--font-poppins), sans-serif' }}
+      >
         <h1 className="text-3xl font-black mb-4">Station Not Found</h1>
-        <p className="text-white/60 mb-8">The requested charging location does not exist or has been relocated.</p>
+        <p className="text-white/60 text-[16px] leading-relaxed mb-8">The requested charging location does not exist or has been relocated.</p>
         <Link href="/locations" className="px-6 py-3 bg-[#00b14f] text-white rounded-xl font-bold hover:scale-105 transition-transform">
           Back to All Locations
         </Link>
@@ -222,7 +228,10 @@ export default function LocationDetailClient() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white pt-16 md:pt-20 pb-20 font-sans">
+    <div
+      className="min-h-screen bg-black text-white pt-16 md:pt-20 pb-20 font-poppins"
+      style={{ fontFamily: '"Poppins", "Poppins Fallback", var(--font-poppins), sans-serif' }}
+    >
       {/* Schema for Local SEO / Near Me Searches */}
       <script
         type="application/ld+json"
@@ -288,7 +297,7 @@ export default function LocationDetailClient() {
                   </h1>
                   <FaCheckCircle className="text-[#00b14f] text-xl md:text-2xl shrink-0" title="Verified Station" />
                 </div>
-                <p className="text-white/60 text-sm md:text-base flex items-center gap-2 pt-1">
+                <p className="text-white/60 text-[16px] leading-relaxed flex items-center gap-2 pt-1">
                   <FaMapMarkerAlt className="text-[#00b14f] shrink-0" />
                   {station.address || `${station.name}, ${station.city}, ${station.state || ""}, ${station.country}`}
                 </p>
@@ -404,16 +413,16 @@ export default function LocationDetailClient() {
               </h2>
               {station.about_text ? (
                 station.about_text.split('\n').filter(p => p.trim() !== '').map((paragraph, idx) => (
-                  <p key={idx} className="text-white/70 text-sm md:text-base leading-relaxed">
+                  <p key={idx} className="text-white/70 text-[16px] leading-relaxed">
                     {paragraph}
                   </p>
                 ))
               ) : (
                 <>
-                  <p className="text-white/70 text-sm md:text-base leading-relaxed">
+                  <p className="text-white/70 text-[16px] leading-relaxed">
                     Relux EV charging station at {station.name}, {station.city} offers reliable, high-speed DC fast charging for all compatible electric vehicles. The station is equipped with high-performance dual-gun chargers, ensuring a safe, fast, and seamless charging experience.
                   </p>
-                  <p className="text-white/70 text-sm md:text-base leading-relaxed">
+                  <p className="text-white/70 text-[16px] leading-relaxed">
                     Whether you are traveling locally or on a long highway drive, charge your EV conveniently while you relax at the nearby amenities.
                   </p>
                 </>
@@ -451,8 +460,8 @@ export default function LocationDetailClient() {
             <div className="lg:col-span-5 space-y-4">
               <div className="p-4 bg-white/5 rounded-2xl border border-white/10 space-y-2">
                 <h3 className="font-bold text-white text-base">{station.name}</h3>
-                <p className="text-white/60 text-xs md:text-sm">{station.address || `${station.city}, ${station.state || ""}, ${station.country}`}</p>
-                <p className="text-xs text-[#00b14f] font-mono pt-1">
+                <p className="text-white/60 text-[16px] leading-relaxed">{station.address || `${station.city}, ${station.state || ""}, ${station.country}`}</p>
+                <p className="text-[16px] text-[#00b14f] font-mono pt-1">
                   Lat: {latNum.toFixed(4)} | Lng: {lngNum.toFixed(4)}
                 </p>
               </div>
@@ -584,7 +593,7 @@ export default function LocationDetailClient() {
                   <span className="text-[#00b14f] font-black text-lg">{activeFaq === index ? "−" : "+"}</span>
                 </button>
                 {activeFaq === index && (
-                  <div className="px-4 pb-4 text-white/70 text-xs md:text-sm leading-relaxed border-t border-white/5 pt-3">
+                  <div className="px-4 pb-4 text-white/70 text-[16px] leading-relaxed border-t border-white/5 pt-3">
                     {faq.a}
                   </div>
                 )}
@@ -609,7 +618,7 @@ export default function LocationDetailClient() {
                   <FaStar key={s} size={18} />
                 ))}
               </div>
-              <p className="text-xs text-white/60 font-semibold">{displayReviewCount} Google Reviews</p>
+              <p className="text-[16px] text-white/60 font-semibold">{displayReviewCount} Google Reviews</p>
               <a
                 href={googleBusinessUrl}
                 target="_blank"
@@ -656,7 +665,7 @@ export default function LocationDetailClient() {
                         <FaStar key={i} />
                       ))}
                     </div>
-                    <p className="text-xs text-white/70 leading-relaxed">{rev.comment}</p>
+                    <p className="text-[16px] text-white/70 leading-relaxed">{rev.comment}</p>
                   </div>
                 ))}
               </div>
@@ -668,7 +677,7 @@ export default function LocationDetailClient() {
         <div className="bg-linear-to-r from-[#00b14f]/20 via-zinc-950 to-zinc-950 border border-[#00b14f]/30 rounded-3xl p-8 flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="space-y-2 text-center md:text-left">
             <h2 className="text-2xl md:text-3xl font-black text-white">Charge Your EV with Relux</h2>
-            <p className="text-white/60 text-sm">Fast, reliable & safe charging across India's rapidly growing network.</p>
+            <p className="text-white/60 text-[16px] leading-relaxed">Fast, reliable & safe charging across India's rapidly growing network.</p>
           </div>
           <Link
             href="/locations"

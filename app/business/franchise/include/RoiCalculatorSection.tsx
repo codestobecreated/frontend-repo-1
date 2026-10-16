@@ -48,7 +48,11 @@ export default function RoiCalculatorSection({ onOpenEnquiry }: RoiCalculatorSec
   };
 
   return (
-    <section id="roi-calculator" className="relative w-full py-20 md:py-28 bg-black overflow-hidden font-sans border-b border-white/5">
+    <section
+      id="roi-calculator"
+      className="relative w-full py-20 md:py-28 bg-black overflow-hidden font-poppins border-b border-white/5"
+      style={{ fontFamily: '"Poppins", "Poppins Fallback", var(--font-poppins), sans-serif' }}
+    >
       {/* Glow Ornaments */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-150 h-150 bg-[#00b14f]/10 blur-[180px] rounded-full pointer-events-none" />
 
@@ -60,8 +64,6 @@ export default function RoiCalculatorSection({ onOpenEnquiry }: RoiCalculatorSec
             <span className="w-8 h-0.5 bg-[#00b14f]" />
             <span className="text-[#00b14f] text-xs font-black uppercase tracking-[0.3em]">
               Interactive ROI
-
-
             </span>
             <span className="w-8 h-0.5 bg-[#00b14f]" />
           </div>
@@ -69,7 +71,7 @@ export default function RoiCalculatorSection({ onOpenEnquiry }: RoiCalculatorSec
           <h2 className="text-3xl md:text-5xl font-black tracking-tighter text-white uppercase leading-tight">
             Calculate Your Franchise  <span className="text-[#00b14f]">Returns</span>
           </h2>
-          <p className="text-white/50 text-xs md:text-sm leading-relaxed mt-3">
+          <p className="text-white/60 text-[16px] leading-relaxed mt-3 font-normal">
             Adjust the sliders below to estimate your potential revenue and payback timeline.
           </p>
         </div>

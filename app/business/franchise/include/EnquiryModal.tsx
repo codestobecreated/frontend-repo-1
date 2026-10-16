@@ -122,7 +122,8 @@ const EnquiryModal = ({ isOpen, onClose, modelTitle }: EnquiryModalProps) => {
           initial={{ opacity: 0, scale: 0.9, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: 20 }}
-          className="relative w-full max-w-5xl bg-[#050505] border border-white/10 rounded-2xl md:rounded-[2.5rem] overflow-hidden shadow-[0_0_100px_rgba(0,177,79,0.25)] flex flex-col md:flex-row max-h-[90vh] md:max-h-none"
+          className="relative w-full max-w-5xl bg-[#050505] border border-white/10 rounded-2xl md:rounded-[2.5rem] overflow-hidden shadow-[0_0_100px_rgba(0,177,79,0.25)] flex flex-col md:flex-row max-h-[90vh] md:max-h-none font-poppins"
+          style={{ fontFamily: '"Poppins", "Poppins Fallback", var(--font-poppins), sans-serif' }}
         >
           {/* Close Button */}
           <button
@@ -142,7 +143,7 @@ const EnquiryModal = ({ isOpen, onClose, modelTitle }: EnquiryModalProps) => {
                 {modelTitle} <br />
                 <span className="text-white">ENQUIRY</span>
               </h2>
-              <p className="text-white/50 text-xs md:text-sm leading-relaxed mb-10 max-w-xs">
+              <p className="text-white/70 text-[16px] leading-relaxed mb-10 max-w-xs">
                 Join the growing EV revolution! Fill out the form below to become a partner for our <span className="text-[#00b14f] font-black">{modelTitle}</span> model in Relux Electric's franchise network.
               </p>
 

@@ -44,7 +44,10 @@ export default function ChargingTimesSection() {
   ];
 
   return (
-    <section className="relative w-full py-16 md:py-24 bg-white text-slate-900 font-sans border-b border-slate-200">
+    <section
+      className="relative w-full py-16 md:py-24 bg-white text-slate-900 font-poppins border-b border-slate-200"
+      style={{ fontFamily: '"Poppins", "Poppins Fallback", var(--font-poppins), sans-serif' }}
+    >
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         
         {/* Header Section */}
@@ -72,7 +75,7 @@ export default function ChargingTimesSection() {
             </div>
           </div>
 
-          <p className="text-slate-600 text-sm sm:text-base leading-relaxed font-medium pt-2">
+          <p className="text-slate-600 text-[16px] leading-relaxed font-normal pt-2">
             Charging duration varies by vehicle type, battery capacity, and charging capability. The following estimates provide a practical comparison of charging times across different EV categories.
           </p>
         </div>

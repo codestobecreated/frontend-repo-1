@@ -1,6 +1,9 @@
 export default function LoadingFranchise() {
   return (
-    <main className="bg-black min-h-screen pt-24 animate-pulse">
+    <main
+      className="bg-black min-h-screen pt-24 animate-pulse font-poppins"
+      style={{ fontFamily: '"Poppins", "Poppins Fallback", var(--font-poppins), sans-serif' }}
+    >
       <section className="relative w-full py-16 md:py-24 px-6">
         <div className="max-w-5xl mx-auto">
           {/* Header */}

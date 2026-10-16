@@ -49,7 +49,10 @@ export default function HowItWorksSection() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
-    <section className="relative w-full py-20 md:py-28 bg-[#031d10] text-white font-sans overflow-hidden border-b border-emerald-900/40">
+    <section
+      className="relative w-full py-20 md:py-28 bg-[#031d10] text-white font-poppins overflow-hidden border-b border-emerald-900/40"
+      style={{ fontFamily: '"Poppins", "Poppins Fallback", var(--font-poppins), sans-serif' }}
+    >
       {/* Ambient glow blobs */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[320px] bg-[#00b14f]/10 rounded-full blur-[100px] pointer-events-none" />
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#00b14f]/8 rounded-full blur-3xl pointer-events-none" />
@@ -73,7 +76,7 @@ export default function HowItWorksSection() {
             The Right Charger Needs the{" "}
             <span className="text-[#00b14f]">Right Location</span>
           </h2>
-          <p className="mt-4 text-white/60 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
+          <p className="mt-4 text-white/60 text-[16px] max-w-2xl mx-auto leading-relaxed font-normal">
             A highway property, commercial space, residential development or fleet location can each call for a different charging setup.
             Relux evaluates your location before recommending what fits.
           </p>
@@ -106,7 +109,7 @@ export default function HowItWorksSection() {
               </h3>
 
               {/* Description */}
-              <p className="text-white/55 text-sm leading-relaxed">
+              <p className="text-white/60 text-[16px] leading-relaxed font-normal">
                 {step.desc}
               </p>
 

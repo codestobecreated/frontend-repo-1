@@ -159,16 +159,28 @@ export default function HomeUpdates() {
               '--translate-desktop': `-${currentIndex * (100 / (blogPosts.length || 1))}%`
             } as React.CSSProperties}
           >
-            {blogPosts.map((post, i) => (
-              <div
-                key={i}
-                className={`update-card-container ${i === currentIndex ? 'active' : ''}`}
-              >
-                <Link href={`/activity-hub/blogs/${post.slug || post.id}`}>
-                  <article
+            {blogPosts.map((post, i) => {
+              const blogSlug = post.slug && post.slug.trim()
+                ? post.slug.trim()
+                : (post.title
+                    ? post.title
+                        .toLowerCase()
+                        .trim()
+                        .replace(/[^\w\s-]/g, "")
+                        .replace(/[\s_-]+/g, "-")
+                        .replace(/^-+|-+$/g, "")
+                    : String(post.id));
+
+              return (
+                <div
+                  key={i}
+                  className={`update-card-container ${i === currentIndex ? 'active' : ''}`}
+                >
+                  <Link href={`/activity-hub/blogs/${blogSlug}`}>
+                    <article
                     className="group flex flex-col bg-[#0a0a0a] rounded-3xl overflow-hidden border border-white/5 hover:border-[#00b14f]/30 transition-all duration-500 h-full cursor-pointer"
                   >
-                    {/* Image Container with Floating Tag */}
+                    {/* Image Container */}
                     <div className="relative aspect-16/10 overflow-hidden shrink-0">
                       <img
                         src={post.image ? (post.image.startsWith('http') ? post.image : (post.image.startsWith('/') ? post.image : `/${post.image}`)) : "/blog/blog_img.webp"}
@@ -178,24 +190,21 @@ export default function HomeUpdates() {
                           e.currentTarget.src = "/blog/blog_img.webp";
                         }}
                       />
-                      <div className="absolute top-4 left-4 z-10">
-                        <span className="px-4 py-1.5 bg-[#00b14f] text-white text-[10px] font-bold rounded-full uppercase tracking-wider shadow-lg">
-                          {post.tag || "EV"}
-                        </span>
-                      </div>
                     </div>
 
                     {/* Content Area */}
-                    <div className="p-8 flex flex-col flex-1">
-                      <time className="text-white/30 text-[10px] font-bold uppercase tracking-widest mb-4">
-                        {formatDate(post.created_at)}
-                      </time>
-
-                      <h3 className="text-lg md:text-xl font-bold text-white mb-6 leading-snug wrap-break-word">
+                    <div className="p-6 sm:p-8 flex flex-col flex-1">
+                      <h3 className="text-lg md:text-xl font-bold text-white mb-3 leading-snug line-clamp-2">
                         {post.title}
                       </h3>
 
-                      <div className="mt-auto">
+                      {(post.excerpt || post.content) && (
+                        <p className="text-white/50 text-xs sm:text-sm leading-relaxed mb-6 line-clamp-2 font-normal">
+                          {(post.excerpt || post.content).replace(/<[^>]+>/g, '').trim()}
+                        </p>
+                      )}
+
+                      <div className="mt-auto pt-2">
                         <div className="flex items-center gap-2 text-[#00b14f] font-bold text-xs uppercase tracking-widest group/link">
                           <span>Read Full Story</span>
                           <FiChevronRight className="transition-transform group-hover/link:translate-x-1" />
@@ -205,7 +214,8 @@ export default function HomeUpdates() {
                   </article>
                 </Link>
               </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 

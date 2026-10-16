@@ -32,7 +32,10 @@ export default function PaybackSection() {
   ];
 
   return (
-    <section className="relative w-full py-20 md:py-28 bg-[#050505] overflow-hidden font-sans border-b border-white/5">
+    <section
+      className="relative w-full py-20 md:py-28 bg-[#050505] overflow-hidden font-poppins border-b border-white/5"
+      style={{ fontFamily: '"Poppins", "Poppins Fallback", var(--font-poppins), sans-serif' }}
+    >
       {/* Glow Ornaments */}
       <div className="absolute top-1/3 left-10 w-[300px] h-[300px] bg-[#00b14f]/5 blur-[120px] rounded-full pointer-events-none" />
 
@@ -51,7 +54,7 @@ export default function PaybackSection() {
           <h2 className="text-3xl md:text-5xl font-black tracking-tighter text-white uppercase leading-tight">
             YOUR MONEY BACK IN <span className="text-[#00b14f]">3 - 4 YEARS</span>
           </h2>
-          <p className="text-white/50 text-xs md:text-sm leading-relaxed mt-3 max-w-xl">
+          <p className="text-white/60 text-[16px] leading-relaxed mt-3 max-w-xl font-normal">
             Our high-efficiency chargers and nationwide app visibility ensure predictable returns and swift capital recovery.
           </p>
         </div>

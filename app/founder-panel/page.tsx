@@ -42,9 +42,12 @@ import {
   Calendar,
   ChevronDown,
   ChevronUp,
-  Percent
+  Percent,
+  Compass,
+  Navigation
 } from "lucide-react";
 import { BASE_URL } from "@/app/ui/baceurl";
+import { ZONES, NORTH_ZONE_STATES, CITIES, getCitiesForStates } from "@/app/ui/states-cities";
 
 interface Toast {
   id: string;
@@ -85,6 +88,8 @@ export default function FounderPanel() {
   const [newManagerEmail, setNewManagerEmail] = useState("");
   const [newAccountRole, setNewAccountRole] = useState<"manager" | "agent">("manager");
   const [newAccountCreatedBy, setNewAccountCreatedBy] = useState<string>("");
+  const [newAccountZone, setNewAccountZone] = useState<string>("north");
+  const [previewStateCities, setPreviewStateCities] = useState<string | null>("Delhi");
   const [teamRoleFilter, setTeamRoleFilter] = useState<"all" | "manager" | "agent">("all");
   const [teamSearchQuery, setTeamSearchQuery] = useState("");
   const [isCreatingManager, setIsCreatingManager] = useState(false);
@@ -374,6 +379,8 @@ export default function FounderPanel() {
     setNewManagerEmail("");
     setNewAccountRole("manager");
     setNewAccountCreatedBy("");
+    setNewAccountZone("north");
+    setPreviewStateCities("Delhi");
   };
 
   const startEditAccount = (acc: any) => {
@@ -385,6 +392,10 @@ export default function FounderPanel() {
     setNewManagerEmail(acc.email || "");
     setNewAccountRole(acc.role || "manager");
     setNewAccountCreatedBy(acc.created_by ? String(acc.created_by) : "");
+    const zone = acc.assigned_zone || (acc.permissions && acc.permissions.zone) || "north";
+    setNewAccountZone(zone);
+    const zData = ZONES[zone] || ZONES.north;
+    setPreviewStateCities(zData.states[0] || "Delhi");
     setShowManagerModal(true);
   };
 
@@ -428,12 +439,23 @@ export default function FounderPanel() {
         : `${BASE_URL}/api/admin/agents/`;
 
       const method = isEdit ? "PATCH" : "POST";
+      
+      const zoneData = ZONES[newAccountZone] || ZONES.north;
+      const zoneStates = zoneData.states;
+      const zoneCities = getCitiesForStates(zoneStates);
+
       const payload: any = {
         username: newManagerUsername.trim(),
         full_name: newManagerFullName.trim(),
         phone: newManagerPhone.trim(),
         email: newManagerEmail.trim(),
-        role: newAccountRole
+        role: newAccountRole,
+        permissions: {
+          zone: newAccountRole === "manager" ? newAccountZone : "all",
+          zone_name: newAccountRole === "manager" ? zoneData.name : "All India",
+          assigned_states: newAccountRole === "manager" ? zoneStates : [],
+          assigned_cities: newAccountRole === "manager" ? zoneCities : [],
+        }
       };
 
       if (newAccountRole === "agent" && newAccountCreatedBy) {
@@ -455,8 +477,14 @@ export default function FounderPanel() {
       });
 
       if (response.ok) {
-        showToast(isEdit ? "✅ Account updated successfully!" : `✅ ${newAccountRole === "manager" ? "Manager" : "Agent"} created successfully!`, "success");
+        showToast(
+          isEdit
+            ? "✅ Account updated successfully!"
+            : `✅ ${newAccountRole === "manager" ? `Manager (${zoneData.name})` : "Agent"} created successfully!`,
+          "success"
+        );
         resetManagerForm();
+        setShowManagerModal(false);
         fetchDbManagers();
       } else {
         let errMsg = `Error ${response.status}`;
@@ -686,7 +714,7 @@ export default function FounderPanel() {
   }
 
   return (
-    <div className="-mt-24 min-h-screen bg-slate-950 text-slate-100 font-sans pb-16">
+    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans pb-16">
       {/* Toast Notification Container */}
       <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-2">
         {toasts.map((toast) => (
@@ -2162,6 +2190,17 @@ export default function FounderPanel() {
                                   <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-blue-500/15 border border-blue-500/30 text-blue-300">
                                     Manager
                                   </span>
+                                  {(() => {
+                                    const z = mh.manager.assigned_zone || mh.manager.permissions?.zone || "north";
+                                    const zName = mh.manager.permissions?.zone_name || (z === "north" ? "North Zone" : `${z.toUpperCase()} Zone`);
+                                    const stCount = mh.manager.assigned_states?.length || mh.manager.permissions?.assigned_states?.length || (z === "north" ? 10 : 0);
+                                    return (
+                                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 flex items-center gap-1 shadow-xs">
+                                        <Compass className="w-3 h-3 text-emerald-400" />
+                                        {zName} {stCount > 0 ? `(${stCount} States)` : ""}
+                                      </span>
+                                    );
+                                  })()}
                                   <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/10 border border-purple-500/20 text-purple-300">
                                     {mh.agentCount} {mh.agentCount === 1 ? "Agent" : "Agents"} Working Under
                                   </span>
@@ -2547,9 +2586,16 @@ export default function FounderPanel() {
                                 </td>
 
                                 <td className="p-4">
-                                  <span className="font-mono font-bold text-white text-sm">
+                                  <span className="font-mono font-bold text-white text-sm block">
                                     @{m.username}
                                   </span>
+                                  {isManager && (
+                                    <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-400 mt-1">
+                                      <Compass className="w-3 h-3 text-emerald-400 shrink-0" />
+                                      {m.permissions?.zone_name || (m.assigned_zone === "north" ? "North Zone" : m.assigned_zone ? `${m.assigned_zone.toUpperCase()} Zone` : "North Zone")}
+                                      {m.permissions?.assigned_states?.length ? ` (${m.permissions.assigned_states.length} States)` : " (10 States)"}
+                                    </span>
+                                  )}
                                 </td>
 
                                 <td className="p-4">
@@ -2937,6 +2983,338 @@ export default function FounderPanel() {
 
             </div>
 
+          </div>
+        </div>
+      )}
+
+      {/* ── CREATE / EDIT MANAGER & AGENT MODAL WITH NORTH ZONE ASSIGNMENT ── */}
+      {showManagerModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="relative w-full max-w-2xl bg-slate-900 border border-slate-700/80 rounded-3xl shadow-2xl overflow-hidden my-8 max-h-[92vh] flex flex-col">
+            
+            {/* Modal Header */}
+            <div className="p-5 sm:p-6 bg-gradient-to-r from-slate-950 via-purple-950/40 to-slate-950 border-b border-slate-800 flex items-center justify-between shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-2xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-400 shrink-0">
+                  {editingManagerId ? <UserCog className="w-5 h-5" /> : <UserPlus className="w-5 h-5" />}
+                </div>
+                <div>
+                  <h3 className="text-lg font-extrabold text-white">
+                    {editingManagerId ? "Edit Account & Territory" : "Create New Team Account"}
+                  </h3>
+                  <p className="text-xs text-slate-400">
+                    {editingManagerId
+                      ? "Update credentials, assigned geographic territory, and permissions"
+                      : "Add a regional manager with dedicated territory or an agent under a manager"}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowManagerModal(false);
+                  resetManagerForm();
+                }}
+                className="p-2 text-slate-400 hover:text-white bg-slate-800/60 hover:bg-slate-800 rounded-xl transition-colors"
+                title="Close"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Form Body - Scrollable */}
+            <form onSubmit={handleSaveManager} className="p-5 sm:p-6 overflow-y-auto space-y-5 flex-1 text-slate-300">
+              
+              {/* Role Selection */}
+              <div className="space-y-2">
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                  <Shield className="w-3.5 h-3.5 text-purple-400" /> Account Role
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setNewAccountRole("manager")}
+                    className={`p-3 rounded-2xl border text-left transition-all flex items-center gap-3 ${
+                      newAccountRole === "manager"
+                        ? "bg-blue-600/15 border-blue-500 text-white shadow-lg shadow-blue-500/10 ring-1 ring-blue-500"
+                        : "bg-slate-950/60 border-slate-800 text-slate-400 hover:border-slate-700"
+                    }`}
+                  >
+                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+                      newAccountRole === "manager" ? "bg-blue-500 text-white" : "bg-slate-800 text-slate-400"
+                    }`}>
+                      <Shield className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-extrabold text-white">Manager (Regional Head)</p>
+                      <p className="text-[11px] text-slate-400">Restricted to assigned geographic zone</p>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setNewAccountRole("agent")}
+                    className={`p-3 rounded-2xl border text-left transition-all flex items-center gap-3 ${
+                      newAccountRole === "agent"
+                        ? "bg-purple-600/15 border-purple-500 text-white shadow-lg shadow-purple-500/10 ring-1 ring-purple-500"
+                        : "bg-slate-950/60 border-slate-800 text-slate-400 hover:border-slate-700"
+                    }`}
+                  >
+                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+                      newAccountRole === "agent" ? "bg-purple-500 text-white" : "bg-slate-800 text-slate-400"
+                    }`}>
+                      <UserCheck className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-extrabold text-white">Agent (Executive)</p>
+                      <p className="text-[11px] text-slate-400">Assigned leads under a manager</p>
+                    </div>
+                  </button>
+                </div>
+              </div>
+
+              {/* If Agent: Assign Parent Manager */}
+              {newAccountRole === "agent" && (
+                <div className="space-y-1.5 bg-slate-950/60 p-4 rounded-2xl border border-slate-800">
+                  <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                    <Users className="w-3.5 h-3.5 text-purple-400" /> Assign to Parent Manager
+                  </label>
+                  <select
+                    value={newAccountCreatedBy}
+                    onChange={(e) => setNewAccountCreatedBy(e.target.value)}
+                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-purple-500"
+                  >
+                    <option value="">Directly Under Founder</option>
+                    {allManagersList.map((mgr: any) => (
+                      <option key={mgr.id} value={mgr.id}>
+                        @{mgr.username} — {mgr.full_name} ({mgr.assigned_zone || mgr.permissions?.zone_name || "Regional"})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* Geographic Zone & Territory Assignment (Strict Isolation for North Zone) */}
+              {newAccountRole === "manager" && (
+                <div className="space-y-3 bg-gradient-to-b from-slate-950 via-slate-950/90 to-slate-900/60 p-4 sm:p-5 rounded-2xl border border-blue-500/30 shadow-inner">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <div>
+                      <label className="text-xs font-extrabold uppercase tracking-wider text-blue-400 flex items-center gap-1.5">
+                        <Compass className="w-4 h-4 text-blue-400" />
+                        Regional Territory &amp; Zone Assignment
+                      </label>
+                      <p className="text-[11px] text-slate-400 mt-0.5">
+                        Manager will strictly <span className="text-emerald-400 font-bold">ONLY</span> access data, leads, states, and cities belonging to this zone.
+                      </p>
+                    </div>
+                    <span className="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-blue-500/15 border border-blue-500/30 text-blue-300">
+                      Strict Data Isolation
+                    </span>
+                  </div>
+
+                  {/* Zone Options */}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-1">
+                    {Object.entries(ZONES).map(([key, zone]) => {
+                      const isSelected = newAccountZone === key;
+                      const isNorth = key === "north";
+                      return (
+                        <button
+                          key={key}
+                          type="button"
+                          onClick={() => {
+                            setNewAccountZone(key);
+                            setPreviewStateCities(zone.states[0] || null);
+                          }}
+                          className={`p-2.5 rounded-xl border text-left transition-all ${
+                            isSelected
+                              ? "bg-blue-600/20 border-blue-500 text-white ring-1 ring-blue-500 shadow-sm"
+                              : "bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700"
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className={`text-xs font-bold ${isSelected ? "text-white" : "text-slate-300"}`}>
+                              {zone.name}
+                            </span>
+                            {isNorth && (
+                              <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                                Target
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-[10px] text-slate-500 mt-1">
+                            {zone.states.length} States &bull; {getCitiesForStates(zone.states).length} Cities
+                          </p>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Territory States & Cities Coverage Viewer */}
+                  {(() => {
+                    const currentZone = ZONES[newAccountZone] || ZONES.north;
+                    const totalStates = currentZone.states;
+                    const totalCities = getCitiesForStates(totalStates);
+                    const activeCities = previewStateCities && CITIES[previewStateCities] ? CITIES[previewStateCities] : [];
+
+                    return (
+                      <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-3.5 space-y-3 mt-2">
+                        <div className="flex items-center justify-between flex-wrap gap-2 border-b border-slate-800 pb-2">
+                          <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                            <Navigation className="w-3.5 h-3.5 text-emerald-400" />
+                            {currentZone.name} Coverage: {totalStates.length} States &amp; {totalCities.length} Major Cities
+                          </span>
+                          <span className="text-[10px] text-slate-400">
+                            Click any state to preview assigned cities
+                          </span>
+                        </div>
+
+                        {/* State Badges */}
+                        <div className="flex flex-wrap gap-1.5">
+                          {totalStates.map((st) => {
+                            const isPreview = previewStateCities === st;
+                            const cityCount = (CITIES[st] || []).length;
+                            return (
+                              <button
+                                key={st}
+                                type="button"
+                                onClick={() => setPreviewStateCities(st)}
+                                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all border ${
+                                  isPreview
+                                    ? "bg-emerald-500/20 border-emerald-500 text-emerald-300 shadow-xs"
+                                    : "bg-slate-950 border-slate-800 text-slate-300 hover:border-slate-700"
+                                }`}
+                              >
+                                {st} <span className="text-[10px] opacity-75">({cityCount})</span>
+                              </button>
+                            );
+                          })}
+                        </div>
+
+                        {/* Selected State Cities List */}
+                        {previewStateCities && (
+                          <div className="bg-slate-950/80 rounded-lg p-2.5 border border-slate-800/80 text-[11px] space-y-1.5">
+                            <div className="flex items-center justify-between text-slate-400">
+                              <span className="font-semibold text-emerald-400">
+                                Cities in {previewStateCities} ({activeCities.length}):
+                              </span>
+                            </div>
+                            <div className="flex flex-wrap gap-1 max-h-24 overflow-y-auto pr-1">
+                              {activeCities.map((city) => (
+                                <span
+                                  key={city}
+                                  className="px-2 py-0.5 rounded bg-slate-900 text-slate-300 border border-slate-800 text-[10px]"
+                                >
+                                  {city}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
+                </div>
+              )}
+
+              {/* Account Credentials & Contact Information */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-300">
+                    Username <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={newManagerUsername}
+                    onChange={(e) => setNewManagerUsername(e.target.value)}
+                    placeholder="e.g. north_manager"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-purple-500"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-300">
+                    Password {editingManagerId ? <span className="text-slate-500 text-[10px]">(Leave blank to keep unchanged)</span> : <span className="text-red-400">*</span>}
+                  </label>
+                  <input
+                    type="password"
+                    required={!editingManagerId}
+                    value={newManagerPassword}
+                    onChange={(e) => setNewManagerPassword(e.target.value)}
+                    placeholder={editingManagerId ? "Enter new password if changing" : "Enter secure password"}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-purple-500"
+                  />
+                </div>
+
+                <div className="space-y-1 sm:col-span-2">
+                  <label className="text-xs font-bold text-slate-300">
+                    Full Name <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={newManagerFullName}
+                    onChange={(e) => setNewManagerFullName(e.target.value)}
+                    placeholder="e.g. Rajesh Sharma"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-purple-500"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-300">Phone Number</label>
+                  <input
+                    type="text"
+                    value={newManagerPhone}
+                    onChange={(e) => setNewManagerPhone(e.target.value)}
+                    placeholder="e.g. +91 98110 12345"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-purple-500"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-300">Email Address</label>
+                  <input
+                    type="email"
+                    value={newManagerEmail}
+                    onChange={(e) => setNewManagerEmail(e.target.value)}
+                    placeholder="e.g. manager.north@relux.in"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-purple-500"
+                  />
+                </div>
+              </div>
+
+              {/* Form Footer Actions */}
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowManagerModal(false);
+                    resetManagerForm();
+                  }}
+                  className="px-4 py-2.5 rounded-xl border border-slate-700 bg-slate-800 hover:bg-slate-750 text-slate-300 text-xs font-bold transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isCreatingManager}
+                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold shadow-lg shadow-purple-600/30 flex items-center gap-2 transition-all disabled:opacity-50"
+                >
+                  {isCreatingManager ? (
+                    <>
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                      <span>Saving Account...</span>
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      <span>{editingManagerId ? "Update Account" : "Create Account & Assign Territory"}</span>
+                    </>
+                  )}
+                </button>
+              </div>
+
+            </form>
           </div>
         </div>
       )}

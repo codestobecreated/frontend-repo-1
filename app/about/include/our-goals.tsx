@@ -5,7 +5,10 @@ import { motion } from "framer-motion";
 
 export default function OurGoals() {
   return (
-    <section className="relative w-full py-16 md:py-24 bg-[#050505] overflow-hidden font-sans border-t border-white/5">
+    <section
+      className="relative w-full py-16 md:py-24 bg-[#050505] overflow-hidden font-poppins border-t border-white/5"
+      style={{ fontFamily: '"Poppins", "Poppins Fallback", var(--font-poppins), sans-serif' }}
+    >
       {/* Subtle ambient lighting */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-150 h-75 bg-[#00b14f]/5 blur-[140px] rounded-full pointer-events-none" />
 
@@ -34,9 +37,9 @@ export default function OurGoals() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
           viewport={{ once: true }}
-          className="space-y-6 text-white/75 text-base md:text-lg leading-relaxed font-normal text-center md:text-left"
+          className="space-y-6 text-zinc-200 text-base md:text-[17px] leading-relaxed font-normal text-center md:text-left"
         >
-          <p className="text-white font-medium text-lg md:text-xl">
+          <p className="text-white font-semibold text-base md:text-[18px] leading-relaxed border-l-2 border-[#00b14f] pl-4">
             The transition to electric mobility is a vital step towards building a cleaner, more sustainable and future-ready India.
           </p>
 

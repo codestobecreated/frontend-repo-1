@@ -1,6 +1,9 @@
 export default function LoadingLocations() {
   return (
-    <main className="fixed inset-0 top-0 bg-[#0a0a0a] animate-pulse">
+    <main
+      className="fixed inset-0 top-0 bg-[#0a0a0a] animate-pulse font-poppins"
+      style={{ fontFamily: '"Poppins", "Poppins Fallback", var(--font-poppins), sans-serif' }}
+    >
       {/* Sidebar skeleton */}
       <div className="absolute left-0 top-0 h-full w-[400px] bg-[#0a0a0a] border-r border-white/5 z-40 flex flex-col pt-28 px-5 gap-4">
         <div className="h-7 w-48 bg-white/10 rounded-xl mb-2" />
@@ -20,7 +23,7 @@ export default function LoadingLocations() {
       <div className="absolute inset-0 left-[400px] bg-[#111] flex items-center justify-center">
         <div className="flex flex-col items-center gap-3 opacity-20">
           <div className="w-16 h-16 rounded-full border-4 border-[#00b14f] border-t-transparent animate-spin" />
-          <p className="text-white text-xs font-bold uppercase tracking-widest">Loading Map...</p>
+          <p className="text-white text-[16px] font-bold uppercase tracking-widest">Loading Map...</p>
         </div>
       </div>
     </main>

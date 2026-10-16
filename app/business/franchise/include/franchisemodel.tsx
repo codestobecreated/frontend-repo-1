@@ -70,7 +70,11 @@ export default function FranchiseModels() {
   };
 
   return (
-    <section id="franchise-models" className="relative w-full py-16 md:py-24 bg-[#ffff] text-slate-900 font-sans border-b border-slate-200">
+    <section
+      id="franchise-models"
+      className="relative w-full py-16 md:py-24 bg-[#ffff] text-slate-900 font-poppins border-b border-slate-200"
+      style={{ fontFamily: '"Poppins", "Poppins Fallback", var(--font-poppins), sans-serif' }}
+    >
 
       {/* Background Watermark/Pattern */}
       <div className="absolute top-0 left-0 w-64 h-64 bg-[#00b14f]/5 rounded-full blur-[100px] pointer-events-none" />
@@ -86,7 +90,7 @@ export default function FranchiseModels() {
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 uppercase tracking-tight leading-tight">
             EXPLORE OUR <span className="text-[#00b14f]">MODELS</span>
           </h2>
-          <p className="text-slate-600 text-sm md:text-base leading-relaxed font-medium">
+          <p className="text-slate-600 text-[16px] leading-relaxed font-normal">
             Relux offers a refundable business model with guaranteed monthly income, specifically tailored to suit the unique needs of your site. Whether it’s a city location with limited space, a highway site or large commercial property, we offer flexible models to best match your location. We also provide EMI options to make getting started more accessible.
           </p>
         </div>

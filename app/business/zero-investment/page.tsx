@@ -50,7 +50,10 @@ export default function ZeroInvestmentPage() {
   };
 
   return (
-    <main className="bg-black min-h-screen">
+    <main
+      className="bg-black min-h-screen font-poppins"
+      style={{ fontFamily: '"Poppins", "Poppins Fallback", var(--font-poppins), sans-serif' }}
+    >
       <script
         type="application/ld+json"
         suppressHydrationWarning

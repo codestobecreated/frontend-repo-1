@@ -10,7 +10,8 @@ import {
   FiPlus, 
   FiShare2, 
   FiChevronRight,
-  FiBookOpen
+  FiBookOpen,
+  FiExternalLink
 } from "react-icons/fi";
 import { motion } from "framer-motion";
 import { BASE_URL } from "@/app/ui/baceurl";
@@ -27,15 +28,15 @@ interface VideoItem {
 }
 
 interface BlogItem {
-  id: number;
+  id: number | string;
   title: string;
-  slug: string;
-  excerpt: string;
+  slug?: string;
+  excerpt?: string;
   image: string;
-  category: string;
-  author: string;
-  read_time: string;
-  tag: string;
+  category?: string;
+  author?: string;
+  read_time?: string;
+  tag?: string;
   created_at: string;
   media_link?: string;
 }
@@ -71,106 +72,153 @@ const getRelativeTime = (dateString: string) => {
   }
 };
 
-const getFullImageUrl = (path: string) => {
-  if (!path) return "";
-  if (path.startsWith("http")) return path;
+const getFullImageUrl = (path?: string) => {
+  if (!path) return "/blog/blog_img.webp";
+  if (path.startsWith("http://") || path.startsWith("https://")) return path;
   
   // Ensure path starts with a slash
   const cleanPath = path.startsWith("/") ? path : `/${path}`;
-  
-  // If it doesn't already contain /media/, prefix it
   const finalPath = cleanPath.startsWith("/media/") ? cleanPath : `/media${cleanPath}`;
-  
   return `${BASE_URL}${finalPath}`;
 };
 
-const ArticleSection = ({ title, articles }: { title: string, articles: BlogItem[] }) => (
-  <div id="articles-insights" className="mb-10 md:mb-14 scroll-mt-24 md:scroll-mt-28">
-    <div className="flex items-center justify-between mb-4 md:mb-6 px-4 md:px-6">
-      <div className="flex items-center gap-2 md:gap-3">
-        <FiBookOpen className="text-[#00b14f] w-4 h-4 md:w-5 md:h-5" />
-        <h2 className="text-base md:text-xl font-black text-white uppercase tracking-tighter">{title}</h2>
-      </div>
-    </div>
-    <div className="flex gap-3 md:gap-5 overflow-x-auto pb-4 px-4 md:px-6 hide-scrollbar scroll-smooth">
-      {articles.slice(0, 6).map((post, idx) => {
-        const itemLink = post.media_link || `/activity-hub/blogs/${post.slug || post.id}`;
-        const isExternal = itemLink.startsWith("http");
+const getArticleTargetLink = (post: BlogItem) => {
+  const rawLink = (post.media_link || "").trim();
+  if (rawLink) {
+    if (rawLink.startsWith("http://") || rawLink.startsWith("https://")) {
+      return { url: rawLink, isExternal: true };
+    }
+    // If it's a domain/web link like "timesofindia.indiatimes.com/..."
+    if (rawLink.includes(".") && !rawLink.startsWith("/")) {
+      return { url: `https://${rawLink}`, isExternal: true };
+    }
+    return { url: rawLink, isExternal: rawLink.startsWith("http") };
+  }
+  if (post.slug && post.slug.trim()) {
+    return { url: `/activity-hub/blogs/${post.slug.trim()}`, isExternal: false };
+  }
+  if (post.title && post.title.trim()) {
+    const slugified = post.title
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, "")
+      .replace(/[\s_-]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+    if (slugified) return { url: `/activity-hub/blogs/${slugified}`, isExternal: false };
+  }
+  if (post.id) {
+    return { url: `/activity-hub/blogs/${post.id}`, isExternal: false };
+  }
+  return { url: "/activity-hub/blogs", isExternal: false };
+};
 
-        return (
-          <motion.div 
-            key={idx}
-            className="min-w-[72vw] max-w-[240px] md:min-w-[280px] group block cursor-pointer"
-            whileHover={{ y: -3 }}
+const ArticleSection = ({ title, articles }: { title: string, articles: BlogItem[] }) => {
+  if (!articles || articles.length === 0) return null;
+
+  return (
+    <div id="articles-insights" className="mb-10 md:mb-14 scroll-mt-24 md:scroll-mt-28">
+      <div className="flex items-center justify-between mb-4 md:mb-6 px-4 md:px-6">
+        <div className="flex items-center gap-2 md:gap-3">
+          <FiBookOpen className="text-[#00b14f] w-4 h-4 md:w-5 md:h-5" />
+          <h2 className="text-base md:text-xl font-black text-white uppercase tracking-tighter">{title}</h2>
+        </div>
+        <span className="text-white/40 text-[10px] md:text-xs font-bold uppercase tracking-wider hidden sm:block">
+          Press &amp; Publications
+        </span>
+      </div>
+
+      <div className="flex gap-3 md:gap-5 overflow-x-auto pb-4 px-4 md:px-6 hide-scrollbar scroll-smooth">
+        {articles.map((post, idx) => {
+          const { url: itemLink, isExternal } = getArticleTargetLink(post);
+
+          const cardContent = (
+            <div className="h-full flex flex-col">
+              <div className="relative aspect-video rounded-md overflow-hidden mb-3 border border-white/5 bg-zinc-900">
+                <img 
+                  src={getFullImageUrl(post.image)} 
+                  alt={post.title} 
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-75 group-hover:opacity-100" 
+                  loading="lazy"
+                  onError={(e) => {
+                    e.currentTarget.src = "/blog/blog_img.webp";
+                  }}
+                />
+                <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="w-10 h-10 rounded-full bg-[#00b14f] flex items-center justify-center shadow-lg text-white">
+                    <FiExternalLink className="w-4 h-4" />
+                  </div>
+                </div>
+                {(post.category || post.tag) && (
+                  <div className="absolute top-2 right-2 z-10 bg-black/70 backdrop-blur-md px-2.5 py-0.5 rounded-sm border border-white/10 text-[8px] font-black uppercase tracking-wider text-[#00b14f]">
+                    {post.category || post.tag}
+                  </div>
+                )}
+              </div>
+
+              <h3 className="text-white font-bold text-xs md:text-sm group-hover:text-[#00b14f] transition-colors line-clamp-2 mb-1 uppercase tracking-tight leading-snug">
+                {post.title}
+              </h3>
+
+              <div className="mt-auto pt-2 flex items-center justify-between">
+                {post.author ? (
+                  <span className="text-white/40 text-[9px] font-bold uppercase tracking-widest truncate">
+                    By {post.author}
+                  </span>
+                ) : (
+                  <span className="text-white/40 text-[9px] font-bold uppercase tracking-widest">
+                    {getRelativeTime(post.created_at)}
+                  </span>
+                )}
+                <span className="flex items-center gap-1 text-[#00b14f] text-[9px] font-bold uppercase tracking-wider group-hover:translate-x-0.5 transition-transform shrink-0">
+                  <span>Open</span>
+                  <FiExternalLink className="w-2.5 h-2.5" />
+                </span>
+              </div>
+            </div>
+          );
+
+          return (
+            <motion.div 
+              key={post.id || idx}
+              className="min-w-[72vw] max-w-[260px] md:min-w-[290px] group block cursor-pointer"
+              whileHover={{ y: -4 }}
+            >
+              {isExternal ? (
+                <a 
+                  href={itemLink} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="block h-full"
+                  title={`Open article: ${post.title}`}
+                >
+                  {cardContent}
+                </a>
+              ) : (
+                <Link 
+                  href={itemLink} 
+                  className="block h-full"
+                  title={`Open article: ${post.title}`}
+                >
+                  {cardContent}
+                </Link>
+              )}
+            </motion.div>
+          );
+        })}
+
+        <div className="flex items-center justify-center min-w-[60px] cursor-pointer group">
+          <Link 
+            href="/activity-hub/blogs" 
+            title="View All Blogs"
+            className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white/40 group-hover:bg-[#00b14f] group-hover:text-white group-hover:border-[#00b14f] transition-all"
           >
-            {isExternal ? (
-              <a href={itemLink} target="_blank" rel="noopener noreferrer">
-                <div className="relative aspect-video rounded-md overflow-hidden mb-3 border border-white/5 bg-zinc-900">
-                  <img 
-                    src={getFullImageUrl(post.image)} 
-                    alt={post.title} 
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-70 group-hover:opacity-100" 
-                    loading="lazy"
-                    onError={(e) => {
-                      e.currentTarget.src = "/blog/blog_img.webp";
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="w-10 h-10 rounded-full bg-[#00b14f]/90 flex items-center justify-center shadow-lg">
-                      <FiPlay className="w-4 h-4 text-white fill-current" />
-                    </div>
-                  </div>
-                  <div className="absolute top-2 right-2 z-10 bg-black/60 backdrop-blur-md px-2.5 py-0.5 rounded-sm border border-white/10 text-[8px] font-black uppercase tracking-wider text-white">
-                    {post.category}
-                  </div>
-                </div>
-                <h3 className="text-white font-bold text-xs md:text-sm group-hover:text-[#00b14f] transition-colors line-clamp-1 mb-0.5 uppercase tracking-tight">{post.title}</h3>
-                {post.author && (
-                  <div className="flex items-center gap-2 text-white/40 text-[9px] font-bold uppercase tracking-widest">
-                    <span>By {post.author}</span>
-                  </div>
-                )}
-              </a>
-            ) : (
-              <Link href={itemLink}>
-                <div className="relative aspect-video rounded-md overflow-hidden mb-3 border border-white/5 bg-zinc-900">
-                  <img 
-                    src={getFullImageUrl(post.image)} 
-                    alt={post.title} 
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-70 group-hover:opacity-100" 
-                    loading="lazy"
-                    onError={(e) => {
-                      e.currentTarget.src = "/blog/blog_img.webp";
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="w-10 h-10 rounded-full bg-[#00b14f]/90 flex items-center justify-center shadow-lg">
-                      <FiPlay className="w-4 h-4 text-white fill-current" />
-                    </div>
-                  </div>
-                  <div className="absolute top-2 right-2 z-10 bg-black/60 backdrop-blur-md px-2.5 py-0.5 rounded-sm border border-white/10 text-[8px] font-black uppercase tracking-wider text-white">
-                    {post.category}
-                  </div>
-                </div>
-                <h3 className="text-white font-bold text-xs md:text-sm group-hover:text-[#00b14f] transition-colors line-clamp-1 mb-0.5 uppercase tracking-tight">{post.title}</h3>
-                {post.author && (
-                  <div className="flex items-center gap-2 text-white/40 text-[9px] font-bold uppercase tracking-widest">
-                    <span>By {post.author}</span>
-                  </div>
-                )}
-              </Link>
-            )}
-          </motion.div>
-        );
-      })}
-      <div className="flex items-center justify-center min-w-[50px] cursor-pointer group">
-        <Link href="/activity-hub/blogs" className="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center text-white/30 group-hover:bg-[#00b14f] group-hover:text-white group-hover:border-[#00b14f] transition-all">
-          <FiChevronRight className="w-5 h-5" />
-        </Link>
+            <FiChevronRight className="w-5 h-5" />
+          </Link>
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 const VideoSection = ({ title, videos }: { title: string, videos: VideoItem[] }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -255,7 +303,10 @@ export default function VideoGallery() {
         }
         if (articlesRes.ok) {
           const articleData = await articlesRes.json();
-          setBlogs(articleData);
+          const list = Array.isArray(articleData) ? articleData : articleData.results || [];
+          setBlogs(Array.isArray(list) ? list : []);
+        } else {
+          setBlogs([]);
         }
         if (slidesRes.ok) {
           const slidesData = await slidesRes.json();
@@ -263,6 +314,7 @@ export default function VideoGallery() {
         }
       } catch (err) {
         console.error("Failed to fetch gallery data:", err);
+        setBlogs([]);
       } finally {
         setLoading(false);
       }
@@ -279,16 +331,28 @@ export default function VideoGallery() {
     return () => clearInterval(interval);
   }, [slides]);
 
-  // Smooth scroll to anchor hash (e.g. #articles-insights) on load
+  // Smooth scroll to anchor hash (e.g. #articles-insights) on load or hashchange
   useEffect(() => {
-    if (!loading && typeof window !== "undefined" && window.location.hash) {
-      const hash = window.location.hash.replace("#", "");
-      setTimeout(() => {
+    const scrollToHash = () => {
+      if (typeof window !== "undefined" && window.location.hash) {
+        const hash = window.location.hash.replace("#", "");
         const el = document.getElementById(hash);
         if (el) {
-          el.scrollIntoView({ behavior: "smooth" });
+          el.scrollIntoView({ behavior: "smooth", block: "start" });
         }
-      }, 250);
+      }
+    };
+
+    if (!loading) {
+      scrollToHash();
+      const t1 = setTimeout(scrollToHash, 200);
+      const t2 = setTimeout(scrollToHash, 600);
+      window.addEventListener("hashchange", scrollToHash);
+      return () => {
+        clearTimeout(t1);
+        clearTimeout(t2);
+        window.removeEventListener("hashchange", scrollToHash);
+      };
     }
   }, [loading]);
 

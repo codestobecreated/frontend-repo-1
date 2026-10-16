@@ -112,7 +112,10 @@ export default function RequirementsSection() {
   ];
 
   return (
-    <section className="relative w-full py-16 md:py-24 bg-gradient-to-b from-[#f4faf6] via-white to-[#edf8f1] text-slate-900 font-sans border-b border-emerald-100/80 overflow-hidden">
+    <section
+      className="relative w-full py-16 md:py-24 bg-gradient-to-b from-[#f4faf6] via-white to-[#edf8f1] text-slate-900 font-poppins border-b border-emerald-100/80 overflow-hidden"
+      style={{ fontFamily: '"Poppins", "Poppins Fallback", var(--font-poppins), sans-serif' }}
+    >
       {/* Subtle Background Grid Pattern */}
       <div className="absolute inset-0 bg-[radial-gradient(#00b14f_1px,transparent_1px)] [background-size:32px_32px] opacity-10 pointer-events-none" />
 
@@ -135,7 +138,7 @@ export default function RequirementsSection() {
           </h2>
 
           {/* Subtitle */}
-          <p className="mt-3 text-slate-600 text-sm sm:text-base md:text-lg font-medium max-w-2xl">
+          <p className="mt-3 text-slate-600 text-[16px] font-normal leading-relaxed max-w-2xl">
             A good charging station starts with a good site. It should have:
           </p>
 

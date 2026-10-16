@@ -66,12 +66,13 @@ export default function EvRevolutionSection() {
   return (
     <section
       id="about-section"
-      className="relative w-full py-16 md:py-24 text-slate-900 font-sans border-b border-emerald-100/80 overflow-hidden scroll-mt-10"
+      className="relative w-full py-16 md:py-24 text-slate-900 font-poppins border-b border-emerald-100/80 overflow-hidden scroll-mt-10"
       style={{
         backgroundImage: "url('/franchise/bg_franchise.jpg')",
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
+        fontFamily: '"Poppins", "Poppins Fallback", var(--font-poppins), sans-serif',
       }}
     >
       {/* Light Glassmorphism Overlay */}
@@ -110,7 +111,7 @@ export default function EvRevolutionSection() {
               </div> */}
 
               {/* Main Paragraph */}
-              <p className="text-slate-700 text-sm sm:text-base md:text-lg font-medium leading-relaxed">
+              <p className="text-slate-700 text-[16px] font-normal leading-relaxed">
                 More electric cars, commercial vehicles and fleets on Indian roads mean more places to charge.
                 But setting up a charging station isn't simply a matter of buying a charger and plugging it in. The location, power availability, charger capacity, vehicle traffic, access, parking and ongoing operations all affect how a station performs.
                 That's where Relux comes in.
@@ -125,7 +126,7 @@ export default function EvRevolutionSection() {
                   <CheckCircle2 className="w-5 h-5 text-[#00b14f]" />
                   That's where Relux comes in.
                 </h3>
-                <p className="text-slate-600 text-xs sm:text-sm md:text-base font-medium leading-relaxed">
+                <p className="text-slate-600 text-[16px] font-normal leading-relaxed">
                   We help our partners evaluate the target location, select the charging setup appropriate for their needs, and establish the required infrastructure to get the station operational.
                 </p>
               </div>

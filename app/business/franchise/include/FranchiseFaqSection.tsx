@@ -12,7 +12,10 @@ export default function FranchiseFaqSection() {
   };
 
   return (
-    <section className="py-16 md:py-24 bg-[#0a0a0a] text-white border-t border-white/5 relative overflow-hidden">
+    <section
+      className="py-16 md:py-24 bg-[#0a0a0a] text-white border-t border-white/5 relative overflow-hidden font-poppins"
+      style={{ fontFamily: '"Poppins", "Poppins Fallback", var(--font-poppins), sans-serif' }}
+    >
       <div className="max-w-6xl mx-auto px-4 md:px-6">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-12">
@@ -22,7 +25,7 @@ export default function FranchiseFaqSection() {
           <h2 className="text-2xl md:text-4xl font-black tracking-tight text-white mb-4">
             Frequently Asked <span className="text-[#00b14f]">Questions</span>
           </h2>
-          <p className="text-zinc-400 text-sm md:text-base">
+          <p className="text-zinc-400 text-[16px] leading-relaxed">
             Everything you need to know about starting an EV charging station business with Relux Electric.
           </p>
         </div>
@@ -64,7 +67,7 @@ export default function FranchiseFaqSection() {
                     isOpen ? "max-h-96 pb-6 opacity-100" : "max-h-0 pb-0 opacity-0 overflow-hidden"
                   }`}
                 >
-                  <p className="text-zinc-300 text-xs md:text-sm leading-relaxed border-t border-white/5 pt-4">
+                  <p className="text-zinc-300 text-[16px] leading-relaxed border-t border-white/5 pt-4">
                     {faq.answer}
                   </p>
                 </div>

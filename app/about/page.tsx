@@ -81,7 +81,10 @@ export default function About() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col bg-black">
+    <main
+      className="flex min-h-screen flex-col bg-black font-poppins"
+      style={{ fontFamily: '"Poppins", "Poppins Fallback", var(--font-poppins), sans-serif' }}
+    >
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(aboutSchema) }}

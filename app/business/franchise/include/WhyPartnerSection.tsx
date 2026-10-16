@@ -41,7 +41,10 @@ const highlights = [
 
 export default function WhyPartnerSection() {
   return (
-    <section className="relative w-full py-16 md:py-24 bg-gradient-to-b from-white via-[#f4faf6] to-white text-slate-900 font-sans border-b border-emerald-100/80 overflow-hidden">
+    <section
+      className="relative w-full py-16 md:py-24 bg-gradient-to-b from-white via-[#f4faf6] to-white text-slate-900 font-poppins border-b border-emerald-100/80 overflow-hidden"
+      style={{ fontFamily: '"Poppins", "Poppins Fallback", var(--font-poppins), sans-serif' }}
+    >
       {/* Subtle dot pattern */}
       <div className="absolute inset-0 bg-[radial-gradient(#00b14f_1px,transparent_1px)] [background-size:32px_32px] opacity-10 pointer-events-none" />
 
@@ -64,7 +67,7 @@ export default function WhyPartnerSection() {
               EXPERIENCE THAT GOES BEYOND{" "}
               <span className="text-[#00b14f]">THE CHARGER</span>
             </h2>
-            <p className="text-slate-700 text-sm sm:text-base font-medium leading-relaxed">
+            <p className="text-slate-700 text-[16px] font-normal leading-relaxed">
               Relux entered the EV charging space in 2012, when India's charging infrastructure was still in its early stages. Since then, we've worked across charging infrastructure, installation, technology and network operations, building our understanding from actual sites rather than from a business plan alone.
             </p>
             <div>

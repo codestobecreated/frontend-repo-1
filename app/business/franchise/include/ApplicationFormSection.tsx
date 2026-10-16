@@ -81,7 +81,11 @@ export default function ApplicationFormSection() {
   };
 
   return (
-    <section id="apply-form" className="relative w-full py-20 md:py-28 bg-[#050505] overflow-hidden font-sans border-b border-white/5">
+    <section
+      id="apply-form"
+      className="relative w-full py-20 md:py-28 bg-[#050505] overflow-hidden font-poppins border-b border-white/5"
+      style={{ fontFamily: '"Poppins", "Poppins Fallback", var(--font-poppins), sans-serif' }}
+    >
       {/* Background Ornament */}
       <div className="absolute bottom-0 right-0 w-125 h-125 bg-[#00b14f]/10 blur-[180px] rounded-full pointer-events-none" />
 
@@ -106,7 +110,7 @@ export default function ApplicationFormSection() {
                 <span className="text-[#00b14f]">APPLY FOR FRANCHISE</span>
               </h2>
 
-              <p className="text-white/50 text-xs md:text-sm leading-relaxed">
+              <p className="text-white/60 text-[16px] leading-relaxed font-normal">
                 Fill out the application form and our team will prepare a complimentary site feasibility & grid survey report for your location.
               </p>
 

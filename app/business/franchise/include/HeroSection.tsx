@@ -8,7 +8,10 @@ interface HeroSectionProps {
 
 export default function HeroSection({ onOpenEnquiry }: HeroSectionProps = {}) {
   return (
-    <section className="relative w-full min-h-55 md:min-h-70 overflow-hidden font-sans">
+    <section
+      className="relative w-full min-h-55 md:min-h-70 overflow-hidden font-poppins"
+      style={{ fontFamily: '"Poppins", "Poppins Fallback", var(--font-poppins), sans-serif' }}
+    >
       {/* Background Image */}
       <img
         src="https://electricvehicles.in/wp-content/uploads/2019/11/Relux-Groups-entered-into-EV.jpeg?v=1676326065"
@@ -25,8 +28,9 @@ export default function HeroSection({ onOpenEnquiry }: HeroSectionProps = {}) {
           EV Charging Franchise Models {" "}
           <span className="text-[#00b14f]">WITH RELUX.</span>
         </h1>
-        <p className="mt-5 text-white/80 text-sm sm:text-base md:text-lg leading-relaxed max-w-2xl font-normal">
-        Relux offers multiple franchise models to fit your investment, location, and site potential. We bring the technology, infrastructure, and operational support required to get your station up and running.</p>
+        <p className="mt-5 text-white/80 text-[16px] leading-relaxed max-w-2xl font-normal">
+          Relux offers multiple franchise models to fit your investment, location, and site potential. We bring the technology, infrastructure, and operational support required to get your station up and running.
+        </p>
         {/* Buttons */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-7">
 

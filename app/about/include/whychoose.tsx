@@ -8,7 +8,10 @@ import { FiArrowRight } from "react-icons/fi";
 
 export default function WhyChooseUs() {
     return (
-        <section className="relative w-full pt-12 md:pt-16 pb-16 md:pb-24 bg-black overflow-hidden">
+        <section
+            className="relative w-full pt-12 md:pt-16 pb-16 md:pb-24 bg-black overflow-hidden font-poppins"
+            style={{ fontFamily: '"Poppins", "Poppins Fallback", var(--font-poppins), sans-serif' }}
+        >
             {/* Subtle Glow */}
             <div className="absolute top-1/4 right-0 w-[400px] h-[400px] bg-[#00b14f]/5 blur-[120px] rounded-full translate-x-1/2 pointer-events-none" />
 
@@ -29,7 +32,7 @@ export default function WhyChooseUs() {
                         </div>
                         <h2 className="text-3xl md:text-5xl font-black text-white leading-[1.1] tracking-tighter uppercase text-center md:text-left">
                             SOLUTIONS FOR ALL <br />
-                            <span className="text-white/30">EV PROGRAMS!</span>
+                            <span className="text-[#00b14f]">EV PROGRAMS!</span>
                         </h2>
                     </motion.div>
                 </div>
@@ -52,14 +55,11 @@ export default function WhyChooseUs() {
                                 fill
                                 className="object-cover transition-transform duration-700 group-hover:scale-110"
                             />
-                            {/* <div className="absolute bottom-4 right-4 w-10 h-10 bg-[#00b14f] rounded-full flex items-center justify-center shadow-lg">
-                                <FiArrowRight className="w-5 h-5 text-white" />
-                            </div> */}
                         </div>
                         <div className="flex-1 flex flex-col justify-between">
                             <div>
-                                <h3 className="text-lg font-black text-white tracking-tight uppercase mb-2">Fast Installation</h3>
-                                <p className="text-white/40 text-xs md:text-sm leading-relaxed">
+                                <h3 className="text-xl font-black text-white tracking-tight uppercase mb-3">Fast Installation</h3>
+                                <p className="text-zinc-200 text-base md:text-[17px] font-normal leading-relaxed">
                                     We set up your EV charging station quickly and carefully — so you can start earning without delay.
                                 </p>
                             </div>
@@ -72,7 +72,7 @@ export default function WhyChooseUs() {
                         whileInView={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8, delay: 0.1 }}
                         viewport={{ once: true }}
-                        className="relative overflow-hidden group border border-white/10 shadow-2xl h-full min-h-[400px] rounded-2xl"
+                        className="relative overflow-hidden group border border-white/15 shadow-2xl h-full min-h-[400px] rounded-2xl"
                     >
                         <Image
                             src="/about/relux-electric-expert-team.webp"
@@ -80,10 +80,12 @@ export default function WhyChooseUs() {
                             fill
                             className="object-cover transition-transform duration-700 group-hover:scale-110"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
-                        <div className="absolute bottom-8 left-8 right-8">
-                            <h3 className="text-xl md:text-2xl font-black text-white tracking-tight uppercase mb-2">Expert Engineering</h3>
-                            <p className="text-white/60 text-[10px] font-bold uppercase tracking-[0.2em]">Relux Premium Standards</p>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent" />
+                        <div className="absolute bottom-8 left-8 right-8 z-10">
+                            <h3 className="text-xl md:text-2xl font-black text-white tracking-tight uppercase mb-2 drop-shadow-md">Expert Engineering</h3>
+                            <div className="inline-block bg-black/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/15">
+                                <p className="text-[#00b14f] text-xs font-black uppercase tracking-[0.22em]">Relux Premium Standards</p>
+                            </div>
                         </div>
                     </motion.div>
 
@@ -95,7 +97,7 @@ export default function WhyChooseUs() {
                         viewport={{ once: true }}
                         className="flex flex-col h-full"
                     >
-                        <div className="relative w-full aspect-[4/3] overflow-hidden border border-white/10 shadow-2xl mb-6 rounded-2xl">
+                        <div className="relative w-full aspect-[4/3] overflow-hidden border border-white/15 shadow-2xl mb-6 rounded-2xl">
                             <Image
                                 src="/about/relux-electric-reliable-service.webp"
                                 alt="Reliable Service"
@@ -105,11 +107,11 @@ export default function WhyChooseUs() {
                         </div>
 
                         <div className="flex-1 flex flex-col justify-between gap-8">
-                            <p className="text-white/60 text-sm md:text-base leading-relaxed">
+                            <p className="text-zinc-200 text-base md:text-[17px] font-normal leading-relaxed">
                                 India&apos;s leading electric vehicle charging infrastructure provider, the only company with End to End charging services for private & public sectors as per the Indian government MOP guidelines across India.
                             </p>
                             <Link href="/contact" className="w-full">
-                                <button className="w-full px-8 py-4 bg-[#00b14f] hover:bg-zinc-900 text-white font-black text-[11px] uppercase tracking-[0.2em] rounded-none transition-all duration-300 shadow-xl shadow-[#00b14f]/20 hover:-translate-y-1">
+                                <button className="w-full px-8 py-4 bg-[#00b14f] hover:bg-white hover:text-black text-white font-black text-xs md:text-sm uppercase tracking-[0.2em] rounded-sm transition-all duration-300 shadow-xl shadow-[#00b14f]/30 hover:-translate-y-1 cursor-pointer">
                                     Get Started Today
                                 </button>
                             </Link>

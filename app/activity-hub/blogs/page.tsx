@@ -149,9 +149,21 @@ export default function BlogsPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-16 items-stretch">
-          {blogPosts.map((post, i) => (
-            <Link key={i} href={`/activity-hub/blogs/${post.slug || post.id}`} className="group block relative h-full">
-              <div className="h-full flex flex-col justify-between bg-gradient-to-br from-white/[0.03] to-transparent rounded-sm p-5 border border-white/5 group-hover:border-[#00b14f]/30 transition-all duration-500 hover:shadow-[0_20px_50px_rgba(0,177,79,0.05)] relative overflow-hidden">
+          {blogPosts.map((post, i) => {
+            const blogSlug = post.slug && post.slug.trim()
+              ? post.slug.trim()
+              : (post.title
+                  ? post.title
+                      .toLowerCase()
+                      .trim()
+                      .replace(/[^\w\s-]/g, "")
+                      .replace(/[\s_-]+/g, "-")
+                      .replace(/^-+|-+$/g, "")
+                  : String(post.id));
+
+            return (
+              <Link key={i} href={`/activity-hub/blogs/${blogSlug}`} className="group block relative h-full">
+                <div className="h-full flex flex-col justify-between bg-gradient-to-br from-white/[0.03] to-transparent rounded-sm p-5 border border-white/5 group-hover:border-[#00b14f]/30 transition-all duration-500 hover:shadow-[0_20px_50px_rgba(0,177,79,0.05)] relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#00b14f] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 
                 <div className="flex-1 flex flex-col">
@@ -194,7 +206,8 @@ export default function BlogsPage() {
                 </div>
               </div>
             </Link>
-          ))}
+            );
+          })}
         </div>
 
         {/* Pagination */}

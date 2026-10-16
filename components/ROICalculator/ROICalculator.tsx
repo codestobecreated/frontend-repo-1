@@ -113,7 +113,11 @@ export default function ROICalculator() {
   }, "");
 
   return (
-    <section id="roi-calculator" className="w-full py-12 md:py-16 bg-white text-zinc-900 font-sans border-b border-zinc-200">
+    <section
+      id="roi-calculator"
+      className="w-full py-12 md:py-16 bg-white text-zinc-900 font-poppins border-b border-zinc-200"
+      style={{ fontFamily: '"Poppins", "Poppins Fallback", var(--font-poppins), sans-serif' }}
+    >
       <div className="max-w-7xl mx-auto px-4 md:px-6 space-y-6">
         
         {/* ============================================================ */}
@@ -127,7 +131,7 @@ export default function ROICalculator() {
             Calculate Your Franchise{" "}
             <span className="text-[#00b14f]">Returns</span>
           </h2>
-          <p className="text-zinc-600 text-xs sm:text-sm leading-relaxed max-w-xl mx-auto font-semibold">
+          <p className="text-zinc-600 text-[16px] leading-relaxed max-w-xl mx-auto font-normal">
             Select your charger plan, adjust daily charging sessions, and project your exact 5-year net profits & payback timeline.
           </p>
         </div>

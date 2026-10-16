@@ -193,6 +193,18 @@ const LocationMapPro = () => {
     if (typeof window !== "undefined") {
       window.history.pushState(null, "", "/locations");
     }
+    if (mapRef.current) {
+      const isMobile = typeof window !== "undefined" && window.innerWidth < 1024;
+      mapRef.current.easeTo({
+        padding: {
+          left: !isMobile && isSidebarOpen ? 400 : 0,
+          top: isMobile ? 110 : 0,
+          right: 0,
+          bottom: isMobile ? 240 : 0,
+        },
+        duration: 500,
+      });
+    }
   };
 
   // Helper to categorize AC/DC
@@ -337,18 +349,19 @@ const LocationMapPro = () => {
 
       validCoords.push([lng, lat]);
 
+      const isSelected = selectedStation?.id === station.id;
       const el = document.createElement("div");
-      el.className = "relux-mapbox-marker";
+      el.className = `relux-mapbox-marker ${isSelected ? "is-selected" : ""}`;
       el.style.width = "40px";
       el.style.height = "40px";
       el.style.position = "absolute";
       el.style.top = "0";
       el.style.left = "0";
       el.style.cursor = "pointer";
-      el.style.zIndex = "999";
+      el.style.zIndex = isSelected ? "10" : "1";
 
       el.innerHTML = `
-                <div style="position:absolute; bottom:0; left:50%; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center;">
+                <div style="position:absolute; bottom:0; left:50%; transform:translateX(-50%) ${isSelected ? "scale(1.15)" : "scale(1)"}; transition:transform 0.2s ease; display:flex; flex-direction:column; align-items:center;">
                     <img src="/Icon.svg" alt="marker" style="width:36px; height:auto; position:relative; z-index:2; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));" 
                          onerror="this.style.display='none'; this.parentElement.style.background='#00b14f'; this.parentElement.style.width='14px'; this.parentElement.style.height='14px'; this.parentElement.style.borderRadius='50%'; this.parentElement.style.border='2px solid white'; this.parentElement.style.boxShadow='0 2px 4px rgba(0,0,0,0.3)';" />
                 </div>
@@ -428,6 +441,11 @@ const LocationMapPro = () => {
         Math.abs(lat) < 90 &&
         Math.abs(lng) <= 180
       ) {
+        const mobileBottomPadding =
+          typeof window !== "undefined"
+            ? Math.max(380, Math.round(window.innerHeight * 0.55))
+            : 400;
+
         mapRef.current.flyTo({
           center: [lng, lat],
           zoom: 14,
@@ -435,9 +453,9 @@ const LocationMapPro = () => {
           duration: 800,
           padding: {
             left: !isMobile && isSidebarOpen ? 440 : 40,
-            top: isMobile ? 110 : 60,
+            top: isMobile ? 120 : 60,
             right: isMobile ? 40 : 380,
-            bottom: isMobile ? 280 : 60,
+            bottom: isMobile ? mobileBottomPadding : 60,
           },
         });
       }
@@ -472,7 +490,10 @@ const LocationMapPro = () => {
   };
 
   return (
-    <div className="relative w-full h-full bg-[#0a0a0a] overflow-hidden flex font-sans">
+    <div
+      className="relative w-full h-full bg-[#0a0a0a] overflow-hidden flex font-poppins"
+      style={{ fontFamily: '"Poppins", "Poppins Fallback", var(--font-poppins), sans-serif' }}
+    >
       {/* Sidebar (Glassmorphic List) */}
       <motion.aside
         initial={false}
@@ -729,7 +750,7 @@ const LocationMapPro = () => {
           {filteredStations.length === 0 && (
             <div className="text-center py-16 opacity-30">
               <FaSearch size={32} className="mx-auto mb-3" />
-              <p className="text-xs font-bold uppercase tracking-widest">
+              <p className="text-[16px] font-bold uppercase tracking-widest">
                 No stations found
               </p>
             </div>
@@ -795,19 +816,23 @@ const LocationMapPro = () => {
       </div>
       {/* Legacy mobile filter space removed */} {/* Map Area */}
       <main className="absolute inset-0 z-10">
-        <div ref={mapContainerRef} className="w-full h-full" />
+        <div
+          ref={mapContainerRef}
+          className="w-full h-full relative z-0 isolate overflow-hidden"
+          style={{ isolation: "isolate" }}
+        />
 
         {/* WhatsApp Floating Button (Mobile Only) */}
         <button
           onClick={() => window.open("https://wa.me/919884866993", "_blank")}
           aria-label="Contact on WhatsApp"
-          className="lg:hidden absolute bottom-6 right-6 w-16 h-16 bg-[#25D366] rounded-full flex items-center justify-center text-white text-3xl shadow-2xl z-40 hover:scale-110 active:scale-95 transition-transform"
+          className={`lg:hidden ${selectedStation ? "hidden" : "flex"} absolute bottom-64 right-4 w-14 h-14 bg-[#25D366] rounded-full items-center justify-center text-white text-2xl shadow-2xl z-40 hover:scale-110 active:scale-95 transition-transform`}
         >
           <FaWhatsapp />
         </button>
 
         {/* Floating Selection Overlay (Details - Desktop Only) */}
-        <div className="hidden lg:block absolute inset-0 pointer-events-none z-30">
+        <div className="hidden lg:block absolute inset-0 pointer-events-none z-40">
           <AnimatePresence>
             {selectedStation &&
               (() => {
@@ -939,13 +964,13 @@ const LocationMapPro = () => {
                                       ),
                                     )}
                                   </div>
-                                  <p className="text-[9px] text-black/60 dark:text-white/50 leading-relaxed">
+                                  <p className="text-[16px] text-black/60 dark:text-white/50 leading-relaxed">
                                     {rev.comment}
                                   </p>
                                 </div>
                               ))
                             ) : (
-                              <p className="text-[9px] text-black/40 dark:text-white/40 italic">
+                              <p className="text-[16px] text-black/40 dark:text-white/40 italic">
                                 No reviews yet.
                               </p>
                             )}
@@ -1045,7 +1070,7 @@ const LocationMapPro = () => {
         </div>
 
         {/* Mobile Bottom Sheet (Mobile Only) */}
-        <div className="lg:hidden absolute bottom-0 left-0 right-0 z-40 bg-[#f5f5f5] rounded-t-3xl shadow-[0_-8px_30px_rgba(0,0,0,0.12)] flex flex-col pointer-events-auto overflow-hidden">
+        <div className="lg:hidden absolute bottom-0 left-0 right-0 z-50 bg-[#f5f5f5] rounded-t-3xl shadow-[0_-8px_30px_rgba(0,0,0,0.25)] flex flex-col pointer-events-auto overflow-hidden">
           <div className="flex justify-center pt-3 pb-2 shrink-0 bg-white">
             <div className="w-7.5 h-0.5 rounded-full bg-gray-400" />
           </div>
@@ -1126,7 +1151,7 @@ const LocationMapPro = () => {
                   {/* 1. STATION IMAGE */}
                   <div className="relative w-full h-48 sm:h-56 shrink-0 mb-5">
                     <img
-                      src="/location/location_img.png"
+                      src={selectedStation.image || "/location/location_img.png"}
                       alt={selectedStation.name}
                       className="w-full h-full object-cover"
                     />
@@ -1222,13 +1247,13 @@ const LocationMapPro = () => {
                                       ),
                                     )}
                                   </div>
-                                  <p className="text-[11px] text-gray-600 leading-relaxed">
+                                  <p className="text-[16px] text-gray-600 leading-relaxed">
                                     {rev.comment}
                                   </p>
                                 </div>
                               ))
                             ) : (
-                              <p className="text-[11px] text-gray-400 italic">
+                              <p className="text-[16px] text-gray-400 italic">
                                 No reviews yet.
                               </p>
                             )}
@@ -1309,6 +1334,9 @@ const LocationMapPro = () => {
       <style
         dangerouslySetInnerHTML={{
           __html: `
+                .relux-marker-container, .mapboxgl-popup, .mapboxgl-map {
+                    font-family: "Poppins", "Poppins Fallback", var(--font-poppins), sans-serif !important;
+                }
                 .relux-marker-container {
                     width: 24px;
                     height: 24px;
@@ -1359,7 +1387,10 @@ const LocationMapPro = () => {
                 .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.05); border-radius: 10px; }
                 .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); }
                 
-                /* Ensure Mapbox marker own classes don't override positioning */
+                /* Ensure Mapbox markers stay within map stacking context and do not bleed above sheets */
+                .mapboxgl-marker {
+                    z-index: 1;
+                }
                 .relux-mapbox-marker {
                     margin: 0 !important;
                     padding: 0 !important;
@@ -1367,6 +1398,10 @@ const LocationMapPro = () => {
                     top: 0 !important;
                     left: 0 !important;
                     will-change: transform;
+                    z-index: 1 !important;
+                }
+                .relux-mapbox-marker.is-selected {
+                    z-index: 10 !important;
                 }
 
                 /* Hide Mapbox Watermark and Attribution */

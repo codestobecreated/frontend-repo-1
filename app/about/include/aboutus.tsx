@@ -26,7 +26,7 @@ export default function AboutUs() {
                             label: item.label,
                             content: item.content
                         })));
-                        
+
                         // Optional: if the current activeTab doesn't exist in the fetched tabs, set it to the first one
                         if (!data.find((t: any) => t.tab_id === activeTab)) {
                             setActiveTab(data[0].tab_id);
@@ -41,7 +41,10 @@ export default function AboutUs() {
     }, []);
 
     return (
-        <section className="relative w-full pt-5 md:pt-10 pb-12 md:pb-16 bg-black overflow-hidden px-6">
+        <section
+            className="relative w-full pt-5 md:pt-10 pb-12 md:pb-16 bg-black overflow-hidden px-6 font-poppins"
+            style={{ fontFamily: '"Poppins", "Poppins Fallback", var(--font-poppins), sans-serif' }}
+        >
             {/* Background Gradient */}
             <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_20%_20%,#00b14f08,transparent_40%)]" />
 
@@ -50,7 +53,7 @@ export default function AboutUs() {
 
                     {/* Left: Content Area */}
                     <div className="flex flex-col h-full justify-center">
-                        <motion.div 
+                        <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.6 }}
@@ -61,7 +64,7 @@ export default function AboutUs() {
                             <span className="text-[#00b14f] text-[10px] md:text-xs font-black uppercase tracking-[0.4em]">About Us</span>
                         </motion.div>
 
-                        <motion.h1 
+                        <motion.h1
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.6, delay: 0.1 }}
@@ -72,28 +75,28 @@ export default function AboutUs() {
                             <span className="text-[#00b14f]"> KEEPS EVs MOVING.</span>
                         </motion.h1>
 
-                        <motion.p 
+                        <motion.p
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.6, delay: 0.2 }}
                             viewport={{ once: true }}
-                            className="text-white/60 text-sm md:text-base leading-relaxed mb-10"
+                            className="text-zinc-200 text-base md:text-[17px] font-normal leading-relaxed mb-10"
                         >
                             From a single charger to large-scale charging networks, Relux designs, installs and supports EV charging infrastructure built for the way India travels.
                         </motion.p>
 
                         {/* Tab Switcher - Balanced */}
-                        <div className="flex items-center gap-10 mb-8 border-b border-white/5">
+                        <div className="flex items-center gap-10 mb-8 border-b border-white/10">
                             {tabs.map((tab) => (
                                 <button
                                     key={tab.id}
                                     onClick={() => setActiveTab(tab.id)}
-                                    className={`text-[10px] md:text-xs font-black uppercase tracking-[0.3em] transition-all relative pb-4 ${activeTab === tab.id ? "text-[#00b14f]" : "text-white/30 hover:text-white/60"
+                                    className={`text-xs md:text-sm font-black uppercase tracking-[0.25em] transition-all relative pb-4 cursor-pointer ${activeTab === tab.id ? "text-[#00b14f]" : "text-zinc-400 hover:text-white"
                                         }`}
                                 >
                                     {tab.label}
                                     {activeTab === tab.id && (
-                                        <motion.div layoutId="activeAboutTab" className="absolute bottom-0 left-0 w-full h-0.5 bg-[#00b14f]" />
+                                        <motion.div layoutId="activeAboutTab" className="absolute bottom-0 left-0 w-full h-[2px] bg-[#00b14f]" />
                                     )}
                                 </button>
                             ))}
@@ -102,12 +105,12 @@ export default function AboutUs() {
                         {/* Tab Content */}
                         <div className="min-h-22.5">
                             <AnimatePresence mode="wait">
-                                <motion.p 
+                                <motion.p
                                     key={activeTab}
                                     initial={{ opacity: 0, x: -10 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     exit={{ opacity: 0, x: 10 }}
-                                    className="text-white/80 text-base md:text-lg font-medium leading-relaxed italic"
+                                    className="text-white text-base md:text-[17px] font-medium leading-relaxed italic border-l-2 border-[#00b14f] pl-4 py-1"
                                 >
                                     &quot;{tabs.find((t) => t.id === activeTab)?.content}&quot;
                                 </motion.p>
@@ -117,12 +120,12 @@ export default function AboutUs() {
 
                     {/* Right: Visual Composition - Proportional */}
                     <div className="relative group flex items-center justify-center lg:justify-end">
-                        <motion.div 
+                        <motion.div
                             initial={{ opacity: 0, scale: 0.98 }}
                             whileInView={{ opacity: 1, scale: 1 }}
                             transition={{ duration: 0.8 }}
                             viewport={{ once: true }}
-                            className="relative w-full max-w-120 aspect-3/3.5 rounded-[2.5rem] overflow-hidden border border-white/10 shadow-2xl"
+                            className="relative w-full max-w-120 aspect-3/3.5 rounded-[2.5rem] overflow-hidden border border-white/15 shadow-2xl"
                         >
                             <Image
                                 src="/about/relux_website_img.webp"
@@ -133,16 +136,22 @@ export default function AboutUs() {
                             <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent" />
                         </motion.div>
 
-                        {/* Balanced Badge */}
-                        <motion.div 
+                        {/* High-Contrast Balanced Badge */}
+                        <motion.div
                             initial={{ opacity: 0, x: 20 }}
                             whileInView={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.8, delay: 0.3 }}
                             viewport={{ once: true }}
-                            className="absolute -bottom-6 -left-6 bg-white py-6 px-10 rounded-4xl shadow-2xl hidden md:flex flex-col items-center min-w-37.5 z-20"
+                            className="absolute -bottom-6 -left-6 bg-[white] border-2 border-[#00b14f]/50 py-5 px-8 rounded-3xl  hidden md:flex flex-col items-center min-w-[170px] z-20"
                         >
-                            <span className="text-4xl font-black text-zinc-900 tracking-tighter">12+</span>
-                            <span className="text-[9px] font-black uppercase tracking-widest text-[#00b14f]">Years Elite</span>
+                            <span className="text-4xl md:text-5xl font-black text-black tracking-tighter leading-none mb-1">
+                                12<span className="text-black">+</span>
+                            </span>
+
+                            <span className="text-xs font-black uppercase text-[#00b14f]">
+                                Years Elite
+                            </span>
+
                         </motion.div>
                     </div>
 

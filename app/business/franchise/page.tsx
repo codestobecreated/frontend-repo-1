@@ -75,7 +75,11 @@ export default function FranchisePage() {
   };
 
   return (
-    <main suppressHydrationWarning className="bg-black min-h-screen font-sans selection:bg-[#00b14f] selection:text-black">
+    <main
+      suppressHydrationWarning
+      className="bg-black min-h-screen font-poppins selection:bg-[#00b14f] selection:text-black"
+      style={{ fontFamily: '"Poppins", "Poppins Fallback", var(--font-poppins), sans-serif' }}
+    >
       {/* FAQ Schema for SEO */}
       <script
         type="application/ld+json"
